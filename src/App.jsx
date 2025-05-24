@@ -23,15 +23,17 @@ function App() {
           <Route path="/" element={<Root />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Home />} />
-          <Route path="/properties" element={<Properties />} />
-          <Route path="/tenants" element={<Tenants />} />
-          <Route path="/leases" element={<Tenants />} />
-          <Route path="/maintenance" element={<Maintenance />} />
-          <Route path="/payments" element={<Payments />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<Home />} />
+            <Route path="properties" element={<Properties />} />
+            <Route path="tenants" element={<Tenants />} />
+            <Route path="leases" element={<Tenants />} />
+            <Route path="maintenance" element={<Maintenance />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="notifications" element={<Notifications />} />
+          </Route>
         </Routes>
       </Router>
     </div>
