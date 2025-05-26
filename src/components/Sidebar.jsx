@@ -4,9 +4,9 @@ import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
   return (
-    <aside className="w-64 bg-white shadow-md flex flex-col h-screen">
+    <aside className="w-64 bg-[#FAFAFAFA]  flex flex-col h-screen">
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6">
         <img src={assets.logo} alt="Logo" className="h-10 w-auto" />
       </div>
 
@@ -17,15 +17,16 @@ const Sidebar = () => {
             <li key={item.name}>
               <NavLink
                 to={item.path}
+                end
                 className={({ isActive }) =>
                   `flex items-center p-2 rounded-md transition ${
                     isActive
-                      ? "bg-[#C8EE44]  font-semibold text-[#1B212D]"
-                      : " hover:bg-gray-100 text-[#929EAE] hover:text-[#1B212D] hover:font-semibold"
+                      ? "bg-[#C8EE44] text-[#1B212D] font-semibold"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`
                 }
               >
-                <item.icon className="h-5 w-5 mr-3" />
+                <item.icon className="w-5 h-5 mr-3" />
                 {item.name}
               </NavLink>
             </li>

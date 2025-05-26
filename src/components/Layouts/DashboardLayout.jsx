@@ -9,7 +9,7 @@ const DashboardLayout = () => {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Topbar />
-        <main className="p-4 bg-[#FAFAFA] flex-1 overflow-auto">
+        <main className="p-4 bg-[#FFFFFF] flex-1 overflow-auto">
           <Outlet />
         </main>
       </div>
