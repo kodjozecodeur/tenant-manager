@@ -27,8 +27,8 @@ const Home = () => {
       </div>
       {/* leases expiration list and rent payments table */}
       <div className="mt-8 grid gap-4 md:grid-cols-2">
-        <LeasesExpirationList />
         <RentPaymentsTable />
+        <LeasesExpirationList />
       </div>
     </div>
   );
