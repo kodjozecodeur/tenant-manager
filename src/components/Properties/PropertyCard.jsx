@@ -2,9 +2,13 @@ import React from "react";
 import { Calculator, Calendar, MapPin, Users, Wrench } from "lucide-react";
 
 // Accept props as an object and destructure property from props
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, onClick }) => {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-shadow cursor-pointer">
+    <button
+      type="button"
+      onClick={() => onClick(property)}
+      className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-shadow cursor-pointer text-left w-full"
+    >
       <img
         src={property.image || "https://via.placeholder.com/300x200"}
         alt="House"
@@ -50,7 +54,7 @@ const PropertyCard = ({ property }) => {
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 

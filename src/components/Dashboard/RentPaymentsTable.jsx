@@ -38,8 +38,12 @@ const RentPaymentsTable = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
-            {assets.recentPayments.map((payment, idx) => (
-              <tr key={idx}>
+            {assets.recentPayments.map((payment) => (
+              <tr
+                key={
+                  payment.id ? payment.id : `${payment.tenant}-${payment.date}`
+                }
+              >
                 <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                   {payment.tenant}
                 </td>
