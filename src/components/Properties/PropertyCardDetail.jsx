@@ -1,13 +1,18 @@
 import { X } from "lucide-react";
 import React from "react";
+import { mockTenants } from "../../data/mockTenants";
 
 const PropertyCardDetail = ({ property, onClose }) => {
+  const tenant = property.tenantId
+    ? mockTenants.find((t) => t.id === property.tenantId)
+    : null;
   return (
     <div className="fixed inset-0 bg-black/30 z-40 flex items-center justify-center p-4 ">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 ">
           <h2 className="text-2xl font-bold text-gray-900">Property Details</h2>
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
           >
@@ -29,21 +34,21 @@ const PropertyCardDetail = ({ property, onClose }) => {
               </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500">
                     Name
-                  </label>
+                  </span>
                   <p className="text-gray-900">{property.name}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500">
                     Address
-                  </label>
+                  </span>
                   <p className="text-gray-900">{property.address}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500">
                     Status
-                  </label>
+                  </span>
                   <div className="mt-1">
                     <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-[#DBFCE7]">
                       {property.status}
@@ -51,9 +56,9 @@ const PropertyCardDetail = ({ property, onClose }) => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500">
                     Type
-                  </label>
+                  </span>
                   <p className="text-gray-900 capitalize">{property.type}</p>
                 </div>
               </div>
@@ -65,31 +70,33 @@ const PropertyCardDetail = ({ property, onClose }) => {
               </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500">
                     Current Tenant
-                  </label>
+                  </span>
                   <p className="text-gray-900">
-                    {property.tenant || "No tenant assigned"}
+                    {tenant ? tenant.name : "No tenant assigned"}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500">
                     Rent
-                  </label>
-                  <p className="text-gray-900">{property.rent}</p>
+                  </span>
+                  <p className="text-gray-900">
+                    ${property.rentAmount?.toLocaleString() || "-"}/month
+                  </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500">
                     Lease Start
-                  </label>
+                  </span>
                   <p className="text-gray-900">
                     {property.leaseStart || "N/A"}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500">
                     Lease End
-                  </label>
+                  </span>
                   <p className="text-gray-900">{property.leaseEnd || "N/A"}</p>
                 </div>
               </div>
@@ -98,15 +105,12 @@ const PropertyCardDetail = ({ property, onClose }) => {
 
           <div className="mt-6 pt-6  flex justify-end space-x-3">
             <button
+              type="button"
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
             >
               Close
             </button>
-            {/* <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2">
-              <Edit className="w-4 h-4" />
-              <span>Edit Property</span>
-            </button> */}
           </div>
         </div>
       </div>

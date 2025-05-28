@@ -1,5 +1,5 @@
 import React from "react";
-import { assets } from "../../assets/assets";
+import { mockExpirations } from "../../data/mockExpirations";
 
 const LeasesExpirationList = () => {
   return (
@@ -27,7 +27,7 @@ const LeasesExpirationList = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
-            {assets.upcomingExpirations.map((lease, idx) => (
+            {mockExpirations.map((lease, idx) => (
               <tr key={idx}>
                 <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                   {lease.tenant}

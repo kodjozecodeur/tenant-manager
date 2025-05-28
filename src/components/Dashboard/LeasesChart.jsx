@@ -8,7 +8,7 @@ import {
   Bar,
   ResponsiveContainer,
 } from "recharts";
-import { assets } from "../../assets/assets";
+import { mockLeasesEndingData } from "../../data/mockLeasesEndingData";
 
 const LeasesChart = () => {
   return (
@@ -18,7 +18,7 @@ const LeasesChart = () => {
       </h2>
       <p className="text-sm text-gray-500 mb-4">Next 90 days</p>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={assets.leasesEndingData}>
+        <BarChart data={mockLeasesEndingData}>
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />

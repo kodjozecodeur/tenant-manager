@@ -1,9 +1,12 @@
 import { Calendar, DollarSign, Mail, Phone } from "lucide-react";
 import React from "react";
+import { mockProperties } from "../../data/mockProperties";
 
 const TenantCard = ({ tenant, onClick }) => {
   if (!tenant) return null;
-
+  const property = tenant.propertyId
+    ? mockProperties.find((p) => p.id === tenant.propertyId)
+    : null;
   return (
     <div className="w-full  bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-200">
       {/* Header with name and status */}
@@ -15,6 +18,8 @@ const TenantCard = ({ tenant, onClick }) => {
           className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
             tenant.rentStatus === "active"
               ? "bg-green-100 text-green-800"
+              : tenant.rentStatus === "ending_soon"
+              ? "bg-yellow-100 text-yellow-800"
               : "bg-red-100 text-red-800"
           }`}
         >
@@ -23,7 +28,9 @@ const TenantCard = ({ tenant, onClick }) => {
       </div>
 
       {/* Property info */}
-      <p className="text-gray-600 mb-6">{tenant.propertyName || "Unknown"}</p>
+      <p className="text-gray-600 mb-6">
+        {property ? property.name : "Unknown"}
+      </p>
 
       {/* Contact and details */}
       <div className="space-y-4 mb-6">
@@ -44,7 +51,7 @@ const TenantCard = ({ tenant, onClick }) => {
 
         <div className="flex items-center text-gray-600">
           <DollarSign className="w-4 h-4 mr-3 text-gray-400" />
-          <span>{tenant.rentAmount || "Unknown"}/month</span>
+          <span>${tenant.rentAmount?.toLocaleString() || "Unknown"}/month</span>
         </div>
       </div>
 

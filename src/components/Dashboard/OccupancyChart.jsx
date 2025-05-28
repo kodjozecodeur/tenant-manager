@@ -1,5 +1,5 @@
 import React from "react";
-import { assets } from "../../assets/assets";
+import { mockOccupancyData } from "../../data/mockOccupancyData";
 import {
   Cell,
   Legend,
@@ -19,7 +19,7 @@ const OccupancyChart = () => {
       <ResponsiveContainer width="100%" height={300}>
         <PieChart width={250} height={250}>
           <Pie
-            data={assets.occupancyData}
+            data={mockOccupancyData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -27,7 +27,7 @@ const OccupancyChart = () => {
             paddingAngle={5}
             dataKey="value"
           >
-            {assets.occupancyData.map((entry, index) => (
+            {mockOccupancyData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>

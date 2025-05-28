@@ -1,5 +1,5 @@
 import React from "react";
-import { assets } from "../../assets/assets";
+import { mockPayments } from "../../data/mockPayments";
 
 const getStatusClass = (status) => {
   switch (status) {
@@ -38,7 +38,7 @@ const RentPaymentsTable = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
-            {assets.recentPayments.map((payment) => (
+            {mockPayments.map((payment) => (
               <tr
                 key={
                   payment.id ? payment.id : `${payment.tenant}-${payment.date}`

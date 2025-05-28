@@ -1,19 +1,30 @@
-import { PlusIcon } from "lucide-react";
 import React from "react";
+import { PlusIcon } from "lucide-react";
 import PropertyCard from "../../components/Properties/PropertyCard";
-import { assets } from "../../assets/assets";
 import PropertyCardDetail from "../../components/Properties/PropertyCardDetail";
 import AddPropertyCard from "../../components/Properties/AddPropertyCard";
+import { getProperties } from "../../utils/api";
 
 const Properties = () => {
-  //track the selected property
+  const [properties, setProperties] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
   const [selectedProperty, setSelectedProperty] = React.useState(null);
-  //for add property
   const [showAddModal, setShowAddModal] = React.useState(false);
+
+  React.useEffect(() => {
+    setLoading(true);
+    getProperties()
+      .then((data) => {
+        setProperties(data);
+        setError(null);
+      })
+      .catch((err) => setError(err.message || "Failed to load properties"))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div>
-      {/* title and add button here */}
       <div className="flex justify-between items-center bg-white p-4 ">
         <h1 className="text-2xl font-semibold text-gray-900 mb-4">
           Properties
@@ -26,25 +37,33 @@ const Properties = () => {
           Add Property
         </button>
       </div>
-      {/* property grid goes here */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {assets.mockProperties.map((property, idx) => (
-          <PropertyCard
-            key={idx}
-            property={property}
-            onClick={setSelectedProperty}
-          />
-        ))}
-      </div>
-      {/* Modal for selected property details */}
+      {loading ? (
+        <div className="text-center py-10 text-gray-500">
+          Loading properties...
+        </div>
+      ) : error ? (
+        <div className="text-center py-10 text-red-500">{error}</div>
+      ) : properties.length === 0 ? (
+        <div className="text-center py-10 text-gray-400">
+          No properties found.
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {properties.map((property) => (
+            <PropertyCard
+              key={property.id}
+              property={property}
+              onClick={setSelectedProperty}
+            />
+          ))}
+        </div>
+      )}
       {selectedProperty && (
         <PropertyCardDetail
           property={selectedProperty}
           onClose={() => setSelectedProperty(null)}
         />
       )}
-      {/* modal for add property
-       */}
       {showAddModal && (
         <AddPropertyCard onClose={() => setShowAddModal(false)} />
       )}

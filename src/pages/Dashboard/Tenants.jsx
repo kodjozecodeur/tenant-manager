@@ -1,24 +1,50 @@
 import React from "react";
 import TenantCard from "../../components/Tenants/TenantCard";
-import { assets } from "../../assets/assets";
 import TenantCardDetail from "../../components/Tenants/TenantCardDetail";
+import { getTenants } from "../../utils/api";
 
 const Tenants = () => {
-  //track selected tenant card
+  const [tenants, setTenants] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
   const [selectedTenant, setSelectedTenant] = React.useState(null);
+
+  React.useEffect(() => {
+    setLoading(true);
+    getTenants()
+      .then((data) => {
+        setTenants(data);
+        setError(null);
+      })
+      .catch((err) => setError(err.message || "Failed to load tenants"))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div>
-      {/* tenant grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {assets.mockTenants.map((tenant) => (
-          <TenantCard
-            key={tenant.id}
-            tenant={tenant}
-            onClick={setSelectedTenant}
-          />
-        ))}
+        {loading ? (
+          <div className="col-span-full text-center py-10 text-gray-500">
+            Loading tenants...
+          </div>
+        ) : error ? (
+          <div className="col-span-full text-center py-10 text-red-500">
+            {error}
+          </div>
+        ) : tenants.length === 0 ? (
+          <div className="col-span-full text-center py-10 text-gray-400">
+            No tenants found.
+          </div>
+        ) : (
+          tenants.map((tenant) => (
+            <TenantCard
+              key={tenant.id}
+              tenant={tenant}
+              onClick={setSelectedTenant}
+            />
+          ))
+        )}
       </div>
-      {/* Modal for selected tenant details */}
       {selectedTenant && (
         <TenantCardDetail
           tenant={selectedTenant}

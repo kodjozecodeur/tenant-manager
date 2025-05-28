@@ -1,8 +1,13 @@
 import React from "react";
 import { Calculator, Calendar, MapPin, Users, Wrench } from "lucide-react";
+import { mockTenants } from "../../data/mockTenants";
 
 // Accept props as an object and destructure property from props
 const PropertyCard = ({ property, onClick }) => {
+  // Find tenant name by tenantId
+  const tenant = property.tenantId
+    ? mockTenants.find((t) => t.id === property.tenantId)
+    : null;
   return (
     <button
       type="button"
@@ -21,12 +26,12 @@ const PropertyCard = ({ property, onClick }) => {
           </h3>
           <span
             className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-              property.status === "Vacant"
+              property.status === "vacant"
                 ? "bg-red-100 text-red-800"
                 : "bg-green-100 text-green-800"
             }`}
           >
-            {property.status || "Taken"}
+            {property.status || "taken"}
           </span>
         </div>
         <div className="flex items-center text-gray-600 mb-3">
@@ -42,15 +47,19 @@ const PropertyCard = ({ property, onClick }) => {
         <div className="flex justify-between items-center pt-3 border-t border-gray-100">
           <div className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
             <Users className="w-4 h-4 mr-1" />
-            <span className="text-sm">{property.tenant || "Tenant"}</span>
+            <span className="text-sm">
+              {tenant ? tenant.name : "No tenant"}
+            </span>
           </div>
           <div className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
             <Calculator className="w-4 h-4 mr-1" />
-            <span className="text-sm">{property.rent || "Accounting"}</span>
+            <span className="text-sm">
+              ${property.rentAmount?.toLocaleString() || "-"}/month
+            </span>
           </div>
           <div className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
             <Wrench className="w-4 h-4 mr-1" />
-            <span className="text-sm">{property.type || "Maintenance"}</span>
+            <span className="text-sm">{property.type || "maintenance"}</span>
           </div>
         </div>
       </div>
