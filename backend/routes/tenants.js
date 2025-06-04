@@ -1,0 +1,89 @@
+const express = require("express");
+const Tenant = require("../models/tenant");
+const auth = require("../middleware/authMiddleware");
+
+const router = express.Router();
+
+//create tenant
+router.post("/", auth, async (req, res) => {
+  const { name, contact, property, lease, upfrontPayment } = req.body;
+
+  try {
+    const newTenant = new Tenant({
+      name,
+      contact,
+      property,
+      lease,
+      upfrontPayment,
+    });
+
+    const savedTenant = await newTenant.save();
+    res.status(201).json(savedTenant);
+  } catch (error) {
+    console.error("Error creating tenant:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+//get all tenant
+router.get("/", auth, async (req, res) => {
+  try {
+    const tenants = await Tenant.find();
+    res.status(200).json(tenants);
+  } catch (error) {
+    console.error("Error fetching tenants:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+//get tenant by id
+router.get("/:id", auth, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const tenant = await Tenant.findById(id);
+    if (!tenant) {
+      return res.status(404).json({ message: "Tenant not found" });
+    }
+    res.status(200).json(tenant);
+  } catch (error) {
+    console.error("Error fetching tenant:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+//update tenant
+router.put("/:id", auth, async (req, res) => {
+  const { id } = req.params;
+  const { name, contact, property, lease, upfrontPayment } = req.body;
+
+  try {
+    const updatedTenant = await Tenant.findByIdAndUpdate(
+      id,
+      { name, contact, property, lease, upfrontPayment },
+      { new: true }
+    );
+
+    if (!updatedTenant) {
+      return res.status(404).json({ message: "Tenant not found" });
+    }
+
+    res.status(200).json(updatedTenant);
+  } catch (error) {
+    console.error("Error updating tenant:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+//delete tenant
+router.delete("/:id", auth, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedTenant = await Tenant.findByIdAndDelete(id);
+    if (!deletedTenant) {
+      return res.status(404).json({ message: "Tenant not found" });
+    }
+    res.status(200).json({ message: "Tenant deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting tenant:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+module.exports = router;
