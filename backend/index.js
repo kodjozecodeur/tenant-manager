@@ -1,3 +1,6 @@
+// =========================
+// Imports and Config
+// =========================
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -7,41 +10,72 @@ dotenv.config();
 
 const app = express();
 
+// =========================
 // Middleware
+// =========================
 app.use(cors());
 app.use(express.json());
 
-// Root route
+// =========================
+// Root Route
+// =========================
 app.get("/", (req, res) => res.send("API Running"));
 
-// Seed admin user utility
+// =========================
+// Seed Admin User Utility
+// =========================
 const seedAdminUser = require("./utils/autoSeedAdmin");
 
-// Auth routes
+// =========================
+// Auth Routes
+// =========================
 const authRoutes = require("./routes/auth");
 app.use("/api", authRoutes);
 
-// Auth middleware & protected route
+// =========================
+// Auth Middleware & Protected Route
+// =========================
 const auth = require("./middleware/authMiddleware");
 app.get("/api/protected", auth, (req, res) => {
   res.send(`Hello user ${req.user.id}, you are authenticated`);
 });
 
-// Tenant routes
+// =========================
+// Tenant Routes
+// =========================
 const tenantRoutes = require("./routes/tenants");
 app.use("/api/tenants", auth, tenantRoutes);
-// 404 Handler for unknown routes
+
+// =========================
+// Property Routes
+// =========================
+const propertyRoutes = require("./routes/property");
+app.use("/api/properties", auth, propertyRoutes);
+
+// =========================
+// Unit Routes
+// =========================
+const unitRoutes = require("./routes/unitRoute");
+app.use("/api/units", auth, unitRoutes);
+
+// =========================
+// 404 Handler for Unknown Routes
+// =========================
 app.use((req, res, next) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// Generic error handling middleware
+// =========================
+// Generic Error Handling Middleware
+// =========================
 app.use((err, req, res, next) => {
   console.error("Server error:", err);
   res.status(500).json({ message: "Server error" });
 });
 
-// Start server and connect to DB
+// =========================
+// Start Server and Connect to DB
+// =========================
 (async () => {
   try {
     await connectDB();

@@ -4,9 +4,9 @@ const auth = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-//create tenant
+//create tenant,
 router.post("/", auth, async (req, res) => {
-  const { name, contact, property, lease, upfrontPayment } = req.body;
+  const { name, contact, property, lease, unit, upfrontPayment } = req.body;
 
   try {
     const newTenant = new Tenant({
@@ -14,6 +14,7 @@ router.post("/", auth, async (req, res) => {
       contact,
       property,
       lease,
+      unit,
       upfrontPayment,
     });
 
@@ -52,12 +53,12 @@ router.get("/:id", auth, async (req, res) => {
 //update tenant
 router.put("/:id", auth, async (req, res) => {
   const { id } = req.params;
-  const { name, contact, property, lease, upfrontPayment } = req.body;
+  const { name, contact, property, lease, unit, upfrontPayment } = req.body;
 
   try {
     const updatedTenant = await Tenant.findByIdAndUpdate(
       id,
-      { name, contact, property, lease, upfrontPayment },
+      { name, contact, property, lease, unit, upfrontPayment },
       { new: true }
     );
 
