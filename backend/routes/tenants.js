@@ -1,30 +1,49 @@
 const express = require("express");
 const Tenant = require("../models/tenant");
 const auth = require("../middleware/authMiddleware");
-
+const { body, validationResult } = require("express-validator");
 const router = express.Router();
 
 //create tenant,
-router.post("/", auth, async (req, res) => {
-  const { name, contact, property, lease, unit, upfrontPayment } = req.body;
+router.post(
+  "/",
+  auth,
+  [
+    body("name").notEmpty().withMessage("Name is required"),
+    body("contact").notEmpty().withMessage("Contact is required"),
+    body("property").notEmpty().withMessage("Property ID is required"),
+    body("unit").notEmpty().withMessage("Unit ID is required"),
+    body("lease").notEmpty().withMessage("Lease is required"),
+    body("upfrontPayment")
+      .isNumeric()
+      .withMessage("Upfront payment must be a number"),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  try {
-    const newTenant = new Tenant({
-      name,
-      contact,
-      property,
-      lease,
-      unit,
-      upfrontPayment,
-    });
+    const { name, contact, property, lease, unit, upfrontPayment } = req.body;
 
-    const savedTenant = await newTenant.save();
-    res.status(201).json(savedTenant);
-  } catch (error) {
-    console.error("Error creating tenant:", error);
-    res.status(500).json({ message: "Server error" });
+    try {
+      const newTenant = new Tenant({
+        name,
+        contact,
+        property,
+        lease,
+        unit,
+        upfrontPayment,
+      });
+
+      const savedTenant = await newTenant.save();
+      res.status(201).json(savedTenant);
+    } catch (error) {
+      console.error("Error creating tenant:", error);
+      res.status(500).json({ message: "Server error" });
+    }
   }
-});
+);
 //get all tenant
 router.get("/", auth, async (req, res) => {
   try {

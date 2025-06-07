@@ -15,7 +15,7 @@ const propertySchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["building", "house", "compound", "unit"],
+      enum: ["building", "house", "compound", "unit", "villa", "apartment"],
     },
     photos: [
       {

@@ -1,36 +1,41 @@
 // src/utils/api.js
-// Simple API utility for future backend integration. For now, returns mock data with simulated delay and error handling.
+// API utility for backend integration using axios
+import axios from "axios";
 
-import { mockTenants } from "../data/mockTenants";
-import { mockProperties } from "../data/mockProperties";
-import { mockPayments } from "../data/mockPayments";
-import { mockMaintenanceRequests } from "../data/mockMaintenanceRequests";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-// Simulate network delay
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// Helper to get auth token from localStorage
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export async function getTenants() {
-  await delay(500);
-  return mockTenants;
+  const res = await axios.get(`${API_BASE_URL}/tenants`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
 }
 
 export async function getProperties() {
-  await delay(500);
-  return mockProperties;
+  const res = await axios.get(`${API_BASE_URL}/properties`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
 }
 
-export async function getPayments() {
-  await delay(500);
-  return mockPayments;
-}
-
+// Example: You may need to implement this endpoint in your backend
 export async function getMaintenanceRequests() {
-  await delay(500);
-  return mockMaintenanceRequests;
+  const res = await axios.get(`${API_BASE_URL}/maintenance`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
 }
 
-// Example for error simulation
-export async function getTenantsWithError() {
-  await delay(500);
-  throw new Error("Failed to fetch tenants");
+// Add more API functions as needed
+
+export async function login(email, password) {
+  const res = await axios.post(`${API_BASE_URL}/login`, { email, password });
+  return res.data; // { token }
 }

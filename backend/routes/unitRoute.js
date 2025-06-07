@@ -2,23 +2,24 @@ const express = require("express");
 const Unit = require("../models/unit");
 const auth = require("../middleware/authMiddleware");
 const router = express.Router();
-
+const { body, validationResult } = require("express-validator");
 //create unit
-router.post("/", auth, async (req, res) => {
-  const {
-    property,
-    unitName,
-    description,
-    size,
-    rent,
-    leaseTerms,
-    photos,
-    status,
-    tenant,
-  } = req.body;
-
-  try {
-    const newUnit = new Unit({
+router.post(
+  "/",
+  auth,
+  [
+    body("property").notEmpty().withMessage("Property ID is required"),
+    body("unitName").notEmpty().withMessage("Unit name is required"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("size").isNumeric().withMessage("Size must be a number"),
+    body("rent").isNumeric().withMessage("Rent must be a number"),
+    body("leaseTerms").notEmpty().withMessage("Lease terms are required"),
+    body("photos").isArray().withMessage("Photos must be an array"),
+    body("status").notEmpty().withMessage("Status is required"),
+    body("tenant").notEmpty().withMessage("Tenant ID is required"),
+  ],
+  async (req, res) => {
+    const {
       property,
       unitName,
       description,
@@ -28,15 +29,29 @@ router.post("/", auth, async (req, res) => {
       photos,
       status,
       tenant,
-      createdBy: req.user._id,
-    });
-    const savedUnit = await newUnit.save();
-    res.status(201).json(savedUnit);
-  } catch (error) {
-    console.error("Error creating unit:", error);
-    res.status(500).json({ message: "Server error" });
+    } = req.body;
+
+    try {
+      const newUnit = new Unit({
+        property,
+        unitName,
+        description,
+        size,
+        rent,
+        leaseTerms,
+        photos,
+        status,
+        tenant,
+        createdBy: req.user._id,
+      });
+      const savedUnit = await newUnit.save();
+      res.status(201).json(savedUnit);
+    } catch (error) {
+      console.error("Error creating unit:", error);
+      res.status(500).json({ message: "Server error" });
+    }
   }
-});
+);
 //get all units
 router.get("/", auth, async (req, res) => {
   try {

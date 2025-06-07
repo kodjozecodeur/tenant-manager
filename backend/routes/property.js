@@ -2,36 +2,47 @@ const express = require("express");
 const Property = require("../models/property");
 const auth = require("../middleware/authMiddleware");
 const router = express.Router();
-
+const { body, validationResult } = require("express-validator");
 //create property
-router.post("/", auth, async (req, res) => {
-  const { name, address, description, type, photos } = req.body;
-  // Validate required fields
-  console.log("req.user:", req.user);
-  console.log("req.user.id:", req.user.id);
-  console.log("req.user._id:", req.user._id);
+router.post(
+  "/",
+  auth,
+  [
+    body("name").notEmpty().withMessage("Name is required"),
+    body("address").notEmpty().withMessage("Address is required"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("type").notEmpty().withMessage("Type is required"),
+    body("photos").isArray().withMessage("Photos must be an array"),
+  ],
+  async (req, res) => {
+    const { name, address, description, type, photos } = req.body;
+    // Validate required fields
+    console.log("req.user:", req.user);
+    console.log("req.user.id:", req.user.id);
+    console.log("req.user._id:", req.user._id);
 
-  try {
-    //check if user is authorized to create a property
-    // Check if user exists
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: "User not authenticated" });
+    try {
+      //check if user is authorized to create a property
+      // Check if user exists
+      if (!req.user || !req.user._id) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      const newProperty = new Property({
+        name,
+        address,
+        description,
+        type,
+        photos,
+        createdBy: req.user._id,
+      });
+      const savedProperty = await newProperty.save();
+      res.status(201).json(savedProperty);
+    } catch (error) {
+      console.error("Error creating property:", error);
+      res.status(500).json({ message: "Server error" });
     }
-    const newProperty = new Property({
-      name,
-      address,
-      description,
-      type,
-      photos,
-      createdBy: req.user._id,
-    });
-    const savedProperty = await newProperty.save();
-    res.status(201).json(savedProperty);
-  } catch (error) {
-    console.error("Error creating property:", error);
-    res.status(500).json({ message: "Server error" });
   }
-});
+);
 //get all properties
 router.get("/", auth, async (req, res) => {
   try {

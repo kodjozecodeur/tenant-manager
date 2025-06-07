@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 dotenv.config();
 
@@ -47,6 +48,12 @@ const tenantRoutes = require("./routes/tenants");
 app.use("/api/tenants", auth, tenantRoutes);
 
 // =========================
+// move Inmove out routes
+// =========================
+const moveRoutes = require("./routes/moves");
+app.use("/api", moveRoutes);
+
+// =========================
 // Property Routes
 // =========================
 const propertyRoutes = require("./routes/property");
@@ -59,20 +66,17 @@ const unitRoutes = require("./routes/unitRoute");
 app.use("/api/units", auth, unitRoutes);
 
 // =========================
-// 404 Handler for Unknown Routes
+// Maintenance Routes
 // =========================
-app.use((req, res, next) => {
-  res.status(404).json({ message: "Route not found" });
-});
+const maintenanceRoutes = require("./routes/maintenance");
+app.use("/api/maintenance", auth, maintenanceRoutes);
 
 // =========================
-// Generic Error Handling Middleware
+// erro handler general
 // =========================
-app.use((err, req, res, next) => {
-  console.error("Server error:", err);
-  res.status(500).json({ message: "Server error" });
-});
 
+app.use(notFound);
+app.use(errorHandler);
 // =========================
 // Start Server and Connect to DB
 // =========================
