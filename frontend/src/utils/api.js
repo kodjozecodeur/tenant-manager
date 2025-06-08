@@ -26,12 +26,12 @@ export async function getProperties() {
 }
 
 // Example: You may need to implement this endpoint in your backend
-export async function getMaintenanceRequests() {
-  const res = await axios.get(`${API_BASE_URL}/maintenance`, {
-    headers: getAuthHeaders(),
-  });
-  return res.data;
-}
+// export async function getMaintenanceRequests() {
+//   const res = await axios.get(`${API_BASE_URL}/maintenance`, {
+//     headers: getAuthHeaders(),
+//   });
+//   return res.data;
+// }
 
 // Add more API functions as needed
 
