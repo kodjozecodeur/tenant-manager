@@ -39,3 +39,29 @@ export async function login(email, password) {
   const res = await axios.post(`${API_BASE_URL}/login`, { email, password });
   return res.data; // { token }
 }
+
+//get dashboard stats
+export async function getDashboardStats() {
+  const res = await axios.get(`${API_BASE_URL}/dashboard/dashboard-stats`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data; // { totalProperties, totalTenants, occupiedProperties, vacantProperties }
+}
+
+// Automatically logout on 401 Unauthorized
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Logout helper
+export function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "/login";
+}

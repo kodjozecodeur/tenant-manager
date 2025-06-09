@@ -1,14 +1,15 @@
-import { CreditCard } from "lucide-react";
 import React from "react";
 
-const StatsCard = ({ title, value, icon: Icon }) => {
+const StatsCard = ({ title, value, icon: Icon, color }) => {
   return (
     <div className="bg-gray-100 p-6 rounded-2xl w-full max-w-sm">
       <div className="flex items-start space-x-4">
         {/* Icon Container */}
         <div className="flex-shrink-0">
-          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-            <Icon />
+          <div
+            className={`w-12 h-12 ${color} rounded-full flex items-center justify-center`}
+          >
+            {Icon && <Icon className="w-6 h-6 text-white" />}
           </div>
         </div>
 

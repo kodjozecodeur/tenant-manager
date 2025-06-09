@@ -70,7 +70,11 @@ app.use("/api/units", auth, unitRoutes);
 // =========================
 const maintenanceRoutes = require("./routes/maintenance");
 app.use("/api/maintenance", auth, maintenanceRoutes);
-
+// =========================
+// Stats Routes
+// =========================
+const dashboardStatsRoutes = require("./routes/dashboardStats");
+app.use("/api/dashboard", auth, dashboardStatsRoutes);
 // =========================
 // erro handler general
 // =========================

@@ -13,7 +13,7 @@ import Home from "./pages/Dashboard/Home";
 import Properties from "./pages/Dashboard/Properties";
 import Tenants from "./pages/Dashboard/Tenants";
 import Leases from "./pages/Dashboard/Leases";
-import Maintenance from "./pages/Dashboard/Maintenance";
+// import Maintenance from "./pages/Dashboard/Maintenance";
 import Payments from "./pages/Dashboard/Payments";
 import Settings from "./pages/Dashboard/Settings";
 import Profile from "./pages/Dashboard/Profile";
@@ -37,7 +37,7 @@ function App() {
           <Route path="properties" element={<Properties />} />
           <Route path="tenants" element={<Tenants />} />
           <Route path="leases" element={<Leases />} />
-          <Route path="maintenance" element={<Maintenance />} />
+          {/* <Route path="maintenance" element={<Maintenance />} /> */}
           <Route path="payments" element={<Payments />} />
           <Route path="settings" element={<Settings />} />
           <Route path="profile" element={<Profile />} />
