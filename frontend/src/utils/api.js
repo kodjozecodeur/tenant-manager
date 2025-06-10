@@ -1,16 +1,25 @@
 // src/utils/api.js
-// API utility for backend integration using axios
+// Axios-based API utility for backend integration
+
 import axios from "axios";
 
+// Base URL for API requests (from env or fallback to localhost)
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-// Helper to get auth token from localStorage
+/**
+ * Helper: Get Authorization headers if token exists in localStorage
+ * @returns {Object} Headers object with Authorization if token is present
+ */
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+/**
+ * Fetch all tenants
+ * @returns {Promise<Array>} List of tenants
+ */
 export async function getTenants() {
   const res = await axios.get(`${API_BASE_URL}/tenants`, {
     headers: getAuthHeaders(),
@@ -18,6 +27,10 @@ export async function getTenants() {
   return res.data;
 }
 
+/**
+ * Fetch all properties
+ * @returns {Promise<Array>} List of properties
+ */
 export async function getProperties() {
   const res = await axios.get(`${API_BASE_URL}/properties`, {
     headers: getAuthHeaders(),
@@ -25,7 +38,7 @@ export async function getProperties() {
   return res.data;
 }
 
-// Example: You may need to implement this endpoint in your backend
+// Example for future expansion:
 // export async function getMaintenanceRequests() {
 //   const res = await axios.get(`${API_BASE_URL}/maintenance`, {
 //     headers: getAuthHeaders(),
@@ -33,22 +46,29 @@ export async function getProperties() {
 //   return res.data;
 // }
 
-// Add more API functions as needed
-
+/**
+ * User login
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<Object>} { token }
+ */
 export async function login(email, password) {
   const res = await axios.post(`${API_BASE_URL}/login`, { email, password });
-  return res.data; // { token }
+  return res.data;
 }
 
-//get dashboard stats
+/**
+ * Fetch dashboard statistics
+ * @returns {Promise<Object>} { totalProperties, totalTenants, occupiedProperties, vacantProperties }
+ */
 export async function getDashboardStats() {
   const res = await axios.get(`${API_BASE_URL}/dashboard/dashboard-stats`, {
     headers: getAuthHeaders(),
   });
-  return res.data; // { totalProperties, totalTenants, occupiedProperties, vacantProperties }
+  return res.data;
 }
 
-// Automatically logout on 401 Unauthorized
+// Axios interceptor: Auto-logout on 401 Unauthorized
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -59,22 +79,32 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-//get 5 recent payments
+
+/**
+ * Fetch 5 most recent payments
+ * @returns {Promise<Array>} Array of recent payments
+ */
 export async function getRecentPayments() {
   const res = await axios.get(`${API_BASE_URL}/payments/recent`, {
     headers: getAuthHeaders(),
   });
-  return res.data; // Array of recent payments
+  return res.data;
 }
 
-//get leases that will expire in 30 days
+/**
+ * Fetch leases expiring within 30 days
+ * @returns {Promise<Array>} Array of expiring leases
+ */
 export async function getExpiringLeases() {
   const res = await axios.get(`${API_BASE_URL}/leases/expiring-soon`, {
     headers: getAuthHeaders(),
   });
-  return res.data; // Array of expiring leases
+  return res.data;
 }
-// Logout helper
+
+/**
+ * Logout helper: Remove token and redirect to login
+ */
 export function logout() {
   localStorage.removeItem("token");
   window.location.href = "/login";
