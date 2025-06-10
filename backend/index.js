@@ -66,7 +66,7 @@ const unitRoutes = require("./routes/unitRoute");
 app.use("/api/units", auth, unitRoutes);
 
 // =========================
-// Maintenance Routes
+// Maintenance Routes (CRUD)
 // =========================
 const maintenanceRoutes = require("./routes/maintenance");
 app.use("/api/maintenance", auth, maintenanceRoutes);
@@ -75,6 +75,18 @@ app.use("/api/maintenance", auth, maintenanceRoutes);
 // =========================
 const dashboardStatsRoutes = require("./routes/dashboardStats");
 app.use("/api/dashboard", auth, dashboardStatsRoutes);
+
+// =========================
+// Lease Routes
+// =========================
+const leaseRoutes = require("./routes/leases");
+app.use("/api/leases", auth, leaseRoutes);
+
+// =========================
+// Payment Routes
+// =========================
+const paymentsRoutes = require("./routes/payments");
+app.use("/api/payments", auth, paymentsRoutes);
 // =========================
 // erro handler general
 // =========================

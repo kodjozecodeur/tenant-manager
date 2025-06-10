@@ -1,5 +1,6 @@
-import React from "react";
-import { mockPayments } from "../../data/mockPayments";
+import React, { useEffect } from "react";
+import { useState } from "react";
+import { getRecentPayments } from "../../utils/api";
 
 const getStatusClass = (status) => {
   switch (status) {
@@ -13,6 +14,16 @@ const getStatusClass = (status) => {
 };
 
 const RentPaymentsTable = () => {
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  //fetch data from api
+  useEffect(() => {
+    getRecentPayments().then((data) => {
+      setPayments(data);
+      setLoading(false);
+    });
+  }, []);
   return (
     <div className="border border-gray-200 bg-white rounded-lg p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-1">
@@ -20,48 +31,56 @@ const RentPaymentsTable = () => {
       </h2>
       <p className="text-sm text-gray-500 mb-4">Latest payment transactions</p>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                Tenant Name
-              </th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                Date
-              </th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                Amount
-              </th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100">
-            {mockPayments.map((payment) => (
-              <tr
-                key={
-                  payment.id ? payment.id : `${payment.tenant}-${payment.date}`
-                }
-              >
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                  {payment.tenant}
-                </td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                  {payment.date}
-                </td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                  {payment.amount}
-                </td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm">
-                  <span className={getStatusClass(payment.status)}>
-                    {payment.status}
-                  </span>
-                </td>
+        {loading ? (
+          <div className="text-center text-gray-500">Loading...</div>
+        ) : payments.length === 0 ? (
+          <div className="text-center text-gray-500">No recent payments</div>
+        ) : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                  Tenant Name
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                  Date
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                  Amount
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                  Status
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-100">
+              {payments.map((payment) => (
+                <tr
+                  key={
+                    payment.id
+                      ? payment.id
+                      : `${payment.tenant}-${payment.date}`
+                  }
+                >
+                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                    {payment.tenant}
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                    {payment.date}
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                    {payment.amount}
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-sm">
+                    <span className={getStatusClass(payment.status)}>
+                      {payment.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

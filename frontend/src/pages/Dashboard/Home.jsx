@@ -11,7 +11,12 @@ const Home = () => {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    getDashboardStats().then(setStats).catch(console.error);
+    getDashboardStats()
+      .then((data) => {
+        console.log("Dashboard stats:", data);
+        setStats(data);
+      })
+      .catch(console.error);
   }, []);
   return (
     <div>
@@ -32,15 +37,27 @@ const Home = () => {
             />
             <StatsCard
               title="Occupied Properties"
-              value={stats.occupiedProperties}
+              value={stats.occupiedProperties ?? 0}
               icon={CheckCircle}
               color="bg-yellow-500"
             />
             <StatsCard
               title="Vacant Properties"
-              value={stats.vacantProperties}
+              value={stats.vacantProperties ?? 0}
               icon={XCircle}
               color="bg-red-500"
+            />
+            <StatsCard
+              title="Total Requests"
+              value={stats.totalRequests}
+              icon={CheckCircle}
+              color="bg-red-500"
+            />
+            <StatsCard
+              title="Pending Requests"
+              value={stats.pendingRequests}
+              icon={XCircle}
+              color="bg-yellow-500"
             />
           </>
         )}
@@ -48,14 +65,20 @@ const Home = () => {
       {/* stats cards */}
 
       {/* occupancy chart and lease chart */}
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        <OccupancyChart />
-        <LeasesChart />
-      </div>
+      {stats && (
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <OccupancyChart data={stats.occupancyData} />
+          <LeasesChart data={stats.leaseChartData} />
+        </div>
+      )}
       {/* leases expiration list and rent payments table */}
       <div className="mt-8 grid gap-4 md:grid-cols-2">
-        <RentPaymentsTable />
-        <LeasesExpirationList />
+        {stats && (
+          <>
+            <RentPaymentsTable recentPayments={stats.recentPayments} />
+            <LeasesExpirationList upcomingLeases={stats.upcomingLeases} />
+          </>
+        )}
       </div>
     </div>
   );

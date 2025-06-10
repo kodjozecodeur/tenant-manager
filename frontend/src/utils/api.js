@@ -59,7 +59,21 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+//get 5 recent payments
+export async function getRecentPayments() {
+  const res = await axios.get(`${API_BASE_URL}/payments/recent`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data; // Array of recent payments
+}
 
+//get leases that will expire in 30 days
+export async function getExpiringLeases() {
+  const res = await axios.get(`${API_BASE_URL}/leases/expiring-soon`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data; // Array of expiring leases
+}
 // Logout helper
 export function logout() {
   localStorage.removeItem("token");
