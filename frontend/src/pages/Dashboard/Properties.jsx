@@ -12,6 +12,17 @@ const Properties = () => {
   const [selectedProperty, setSelectedProperty] = React.useState(null);
   const [showAddModal, setShowAddModal] = React.useState(false);
 
+  const fetchProperties = () => {
+    setLoading(true);
+    getProperties()
+      .then((data) => {
+        setProperties(data);
+        setError(null);
+      })
+      .catch((err) => setError(err.message || "Failed to load properties"))
+      .finally(() => setLoading(false));
+  };
+
   React.useEffect(() => {
     setLoading(true);
     getProperties()
@@ -65,7 +76,10 @@ const Properties = () => {
         />
       )}
       {showAddModal && (
-        <AddPropertyCard onClose={() => setShowAddModal(false)} />
+        <AddPropertyCard
+          onClose={() => setShowAddModal(false)}
+          onSuccess={fetchProperties}
+        />
       )}
     </div>
   );

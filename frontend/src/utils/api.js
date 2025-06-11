@@ -38,6 +38,60 @@ export async function getProperties() {
   return res.data;
 }
 
+/**
+ * create a new property
+ * @param {Object} propertyData - Property details
+ * @returns {Promise<Object>} Created property
+ */
+export async function createProperty(propertyData) {
+  const res = await axios.post(`${API_BASE_URL}/properties`, propertyData, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * get a single property by ID
+ * @param {string} propertyId - ID of the property
+ * @returns {Promise<Object>} Property details
+ */
+export async function getPropertyById(propertyId) {
+  const res = await axios.get(`${API_BASE_URL}/properties/${propertyId}`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Update an existing property
+ * @param {string} propertyId - ID of the property to update
+ * @param {Object} propertyData - Updated property details
+ * @returns {Promise<Object>} Updated property
+
+ */
+export async function updateProperty(propertyId, propertyData) {
+  const res = await axios.put(
+    `${API_BASE_URL}/properties/${propertyId}`,
+    propertyData,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
+  return res.data;
+}
+
+/**
+ * Delete a property by ID
+ * @param {string} propertyId - ID of the property to delete
+ * @returns {Promise<Object>} Response confirming deletion
+ */
+export async function deleteProperty(propertyId) {
+  const res = await axios.delete(`${API_BASE_URL}/properties/${propertyId}`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
 // Example for future expansion:
 // export async function getMaintenanceRequests() {
 //   const res = await axios.get(`${API_BASE_URL}/maintenance`, {
