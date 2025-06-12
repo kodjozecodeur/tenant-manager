@@ -1,11 +1,7 @@
 import { X } from "lucide-react";
 import React from "react";
-import { mockTenants } from "../../data/mockTenants";
 
 const PropertyCardDetail = ({ property, onClose }) => {
-  const tenant = property.tenantId
-    ? mockTenants.find((t) => t.id === property.tenantId)
-    : null;
   return (
     <div className="fixed inset-0 bg-black/30 z-40 flex items-center justify-center p-4 ">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -22,7 +18,13 @@ const PropertyCardDetail = ({ property, onClose }) => {
 
         <div className="p-6">
           <img
-            src={property.image || "https://via.placeholder.com/600x400"}
+            src={
+              (property.photos &&
+                property.photos.length > 0 &&
+                property.photos[0]) ||
+              property.image ||
+              "https://via.placeholder.com/600x400"
+            }
             alt={property.name}
             className="w-full h-64 object-cover rounded-lg mb-6"
           />
@@ -47,13 +49,9 @@ const PropertyCardDetail = ({ property, onClose }) => {
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">
-                    Status
+                    Description
                   </span>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-[#DBFCE7]">
-                      {property.status}
-                    </span>
-                  </div>
+                  <p className="text-gray-900">{property.description || "-"}</p>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">
@@ -61,44 +59,31 @@ const PropertyCardDetail = ({ property, onClose }) => {
                   </span>
                   <p className="text-gray-900 capitalize">{property.type}</p>
                 </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-500">
+                    Created By
+                  </span>
+                  <p className="text-gray-900">
+                    {property.createdBy?.name || "-"}
+                  </p>
+                </div>
               </div>
             </div>
-
             <div>
-              <h3 className="text-lg font-semibold mb-4">
-                Tenant & Lease Information
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <span className="text-sm font-medium text-gray-500">
-                    Current Tenant
-                  </span>
-                  <p className="text-gray-900">
-                    {tenant ? tenant.name : "No tenant assigned"}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-gray-500">
-                    Rent
-                  </span>
-                  <p className="text-gray-900">
-                    ${property.rentAmount?.toLocaleString() || "-"}/month
-                  </p>
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-gray-500">
-                    Lease Start
-                  </span>
-                  <p className="text-gray-900">
-                    {property.leaseStart || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-gray-500">
-                    Lease End
-                  </span>
-                  <p className="text-gray-900">{property.leaseEnd || "N/A"}</p>
-                </div>
+              <h3 className="text-lg font-semibold mb-4">Photos</h3>
+              <div className="flex flex-wrap gap-2">
+                {property.photos && property.photos.length > 0 ? (
+                  property.photos.map((photo, idx) => (
+                    <img
+                      key={idx}
+                      src={photo}
+                      alt={`Property Photo ${idx + 1}`}
+                      className="w-24 h-24 object-cover rounded border"
+                    />
+                  ))
+                ) : (
+                  <span className="text-gray-500">No photos available</span>
+                )}
               </div>
             </div>
           </div>

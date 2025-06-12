@@ -15,8 +15,14 @@ const PropertyCard = ({ property, onClick }) => {
       className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-shadow cursor-pointer text-left w-full"
     >
       <img
-        src={property.image || "https://via.placeholder.com/300x200"}
-        alt="House"
+        src={
+          (property.photos &&
+            property.photos.length > 0 &&
+            property.photos[0]) ||
+          property.image ||
+          "https://via.placeholder.com/300x200"
+        }
+        alt={property.name || "Property"}
         className="w-full h-48 object-cover"
       />
       <div className="p-4">
@@ -39,6 +45,23 @@ const PropertyCard = ({ property, onClick }) => {
           <span className="text-sm truncate">
             {property.address || "123 Roadhouse"}
           </span>
+        </div>
+        {/* Show linked units */}
+        <div className="mb-2">
+          <span className="text-xs font-medium text-gray-500">Units:</span>
+          {property.units && property.units.length > 0 ? (
+            <ul className="ml-2 list-disc list-inside">
+              {property.units.map((unit) => (
+                <li key={unit._id || unit.id} className="text-xs text-gray-700">
+                  {unit.unitName}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <span className="ml-2 text-xs text-gray-400">
+              No units available
+            </span>
+          )}
         </div>
         <div className="flex items-center text-gray-500 text-sm mb-4">
           <Calendar className="w-4 h-4 mr-1" />

@@ -5,6 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Pages
 import Login from "./pages/Auth/Login";
@@ -19,12 +21,15 @@ import Settings from "./pages/Dashboard/Settings";
 import Profile from "./pages/Dashboard/Profile";
 import Notifications from "./pages/Dashboard/Notifications";
 import DashboardLayout from "./components/Layouts/DashboardLayout";
+import Units from "./pages/Dashboard/Units";
 
 // Layout
 
 function App() {
   return (
     <Router>
+      {/* Toast notifications */}
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<RootRedirect />} />
@@ -35,6 +40,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Home />} />
           <Route path="properties" element={<Properties />} />
+          <Route path="units" element={<Units />} />
           <Route path="tenants" element={<Tenants />} />
           <Route path="leases" element={<Leases />} />
           {/* <Route path="maintenance" element={<Maintenance />} /> */}

@@ -62,8 +62,8 @@ app.use("/api/properties", auth, propertyRoutes);
 // =========================
 // Unit Routes
 // =========================
-const unitRoutes = require("./routes/unitRoute");
-app.use("/api/units", auth, unitRoutes);
+const unitRoutes = require("./routes/unit");
+app.use("/api/units", unitRoutes);
 
 // =========================
 // Maintenance Routes (CRUD)

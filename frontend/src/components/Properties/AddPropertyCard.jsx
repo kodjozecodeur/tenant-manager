@@ -15,16 +15,37 @@ const AddPropertyCard = ({ onClose, onSuccess }) => {
   //onSubmit function
   const onSubmit = async (data) => {
     try {
-      //call apit ot create property
-      await createProperty(data);
+      // Convert photos FileList to array of base64 strings (for demo, adjust as needed)
+      let photos = [];
+      if (data.photos && data.photos.length > 0) {
+        photos = await Promise.all(
+          Array.from(data.photos).map(
+            (file) =>
+              new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+              })
+          )
+        );
+      }
+      const payload = {
+        name: data.name,
+        address: data.address,
+        description: data.description,
+        type: data.type,
+        photos,
+      };
+      await createProperty(payload);
       toast.success("Property added successfully!");
       reset(); // Reset form fields
       onSuccess?.(); // Call success callback to refresh properties list
       onClose(); // Close the modal
     } catch (error) {
       console.error("Error adding property:", error);
-      // Handle error (e.g., show notification)
-      toast.error("Failed to add property. Please try again.");
+      // Show a user-friendly error notification
+      toast.error("Something went wrong, try again.");
     }
   };
   return (
@@ -60,17 +81,53 @@ const AddPropertyCard = ({ onClose, onSuccess }) => {
           </div>
 
           <div>
+            <textarea
+              placeholder="Description"
+              {...register("description", {
+                required: "Description is required",
+              })}
+              className="w-full border rounded p-2 min-h-[80px]"
+            />
+            {errors.description && (
+              <p className="text-red-500 text-sm">
+                {errors.description.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <select
+              {...register("type", { required: "Type is required" })}
+              className="w-full border rounded p-2"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Select Property Type
+              </option>
+              <option value="apartment">Apartment</option>
+              <option value="house">House</option>
+              <option value="building">Building</option>
+              <option value="compound">Compound</option>
+              <option value="unit">Unit</option>
+              <option value="villa">Villa</option>
+            </select>
+            {errors.type && (
+              <p className="text-red-500 text-sm">{errors.type.message}</p>
+            )}
+          </div>
+
+          <div>
             <input
-              type="number"
-              placeholder="Units"
-              {...register("units", {
-                required: "Number of units is required",
-                min: { value: 1, message: "At least 1 unit required" },
+              type="file"
+              multiple
+              accept="image/*"
+              {...register("photos", {
+                required: "At least one photo is required",
               })}
               className="w-full border rounded p-2"
             />
-            {errors.units && (
-              <p className="text-red-500 text-sm">{errors.units.message}</p>
+            {errors.photos && (
+              <p className="text-red-500 text-sm">{errors.photos.message}</p>
             )}
           </div>
 

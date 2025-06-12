@@ -10,6 +10,7 @@ import {
   Cog,
   Wallet,
   UserRoundCog,
+  HouseIcon,
 } from "lucide-react";
 
 export const assets = {
@@ -20,6 +21,7 @@ export const assets = {
   sidebarItems: [
     { name: "Dashboard", icon: House, path: "" },
     { name: "Properties", icon: Building2, path: "properties" },
+    { name: "Units", icon: HouseIcon, path: "units" },
     { name: "Tenants", icon: Users, path: "tenants" },
     { name: "Leases", icon: FileSearch, path: "leases" },
     { name: "Maintenance", icon: Cog, path: "maintenance" },

@@ -46,11 +46,18 @@ router.post(
 //get all properties
 router.get("/", auth, async (req, res) => {
   try {
-    const properties = await Property.find().populate(
-      "createdBy",
-      "name email"
+    const properties = await Property.find()
+      .populate("createdBy", "name email")
+      .lean();
+    // For each property, fetch its units
+    const Unit = require("../models/unit");
+    const propertiesWithUnits = await Promise.all(
+      properties.map(async (property) => {
+        const units = await Unit.find({ property: property._id });
+        return { ...property, units };
+      })
     );
-    res.status(200).json(properties);
+    res.status(200).json(propertiesWithUnits);
   } catch (error) {
     console.error("Error fetching properties:", error);
     res.status(500).json({ message: "Server error" });
