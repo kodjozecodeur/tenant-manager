@@ -11,12 +11,7 @@ router.post(
   [
     body("name").notEmpty().withMessage("Name is required"),
     body("contact").notEmpty().withMessage("Contact is required"),
-    body("property").notEmpty().withMessage("Property ID is required"),
-    body("unit").notEmpty().withMessage("Unit ID is required"),
-    body("lease").notEmpty().withMessage("Lease is required"),
-    body("upfrontPayment")
-      .isNumeric()
-      .withMessage("Upfront payment must be a number"),
+    // property, unit, lease, upfrontPayment are now optional
   ],
   async (req, res) => {
     const errors = validationResult(req);

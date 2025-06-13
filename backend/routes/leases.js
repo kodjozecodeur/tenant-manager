@@ -52,6 +52,16 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { unit, tenant, startDate, endDate, rentAmount, status } = req.body;
+    // Check that the unit is vacant
+    const Unit = require("../models/unit");
+    const foundUnit = await Unit.findById(unit);
+    if (!foundUnit) {
+      return res.status(404).json({ message: "Unit not found" });
+    }
+    if (foundUnit.status === "occupied") {
+      return res.status(400).json({ message: "Unit is already occupied" });
+    }
+    // Create the lease
     const newLease = new Lease({
       unit,
       tenant,
@@ -61,6 +71,9 @@ router.post("/", async (req, res) => {
       status,
     });
     await newLease.save();
+    // Mark the unit as occupied
+    foundUnit.status = "occupied";
+    await foundUnit.save();
     res.status(201).json(newLease);
   } catch (error) {
     console.error("Error creating lease:", error);

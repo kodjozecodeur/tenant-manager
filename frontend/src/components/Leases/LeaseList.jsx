@@ -2,6 +2,7 @@ import React from "react";
 // import { assets } from "../../assets/assets";
 import { Calendar, DollarSign, Edit, Eye, User } from "lucide-react";
 import { mockTenants } from "../../data/mockTenants";
+import AddLeaseCard from "./AddLeaseCard";
 
 const LeaseList = () => {
   //get status badge color based on lease status
@@ -15,8 +16,25 @@ const LeaseList = () => {
     }
     return baseClasses;
   };
+
+  const [showAddLease, setShowAddLease] = React.useState(false);
+
   return (
     <div>
+      <div className="flex justify-end mb-4">
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+          onClick={() => setShowAddLease(true)}
+        >
+          + New Lease
+        </button>
+      </div>
+      {showAddLease && (
+        <AddLeaseCard
+          onClose={() => setShowAddLease(false)}
+          onSuccess={() => setShowAddLease(false)}
+        />
+      )}
       {/* list of leases */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         {/* Table Header */}

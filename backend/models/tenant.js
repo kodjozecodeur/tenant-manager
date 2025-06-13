@@ -7,7 +7,7 @@ const tenantSchema = new mongoose.Schema(
     unit: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Unit",
-      required: true,
+      required: false, // made optional
     },
     lease: { type: String },
     upfrontPayment: { type: Number, default: 0 },

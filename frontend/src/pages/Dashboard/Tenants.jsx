@@ -1,6 +1,7 @@
 import React from "react";
 import TenantCard from "../../components/Tenants/TenantCard";
 import TenantCardDetail from "../../components/Tenants/TenantCardDetail";
+import AddTenantCard from "../../components/Tenants/AddTenantCard";
 import { getTenants } from "../../utils/api";
 
 const Tenants = () => {
@@ -8,6 +9,7 @@ const Tenants = () => {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [selectedTenant, setSelectedTenant] = React.useState(null);
+  const [showAddTenant, setShowAddTenant] = React.useState(false);
 
   React.useEffect(() => {
     setLoading(true);
@@ -22,6 +24,20 @@ const Tenants = () => {
 
   return (
     <div>
+      <div className="flex justify-end mb-4">
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+          onClick={() => setShowAddTenant(true)}
+        >
+          + Add Tenant
+        </button>
+      </div>
+      {showAddTenant && (
+        <AddTenantCard
+          onClose={() => setShowAddTenant(false)}
+          onSuccess={() => setShowAddTenant(false)}
+        />
+      )}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {loading ? (
           <div className="col-span-full text-center py-10 text-gray-500">
