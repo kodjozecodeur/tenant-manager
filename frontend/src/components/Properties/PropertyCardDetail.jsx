@@ -116,6 +116,7 @@ const PropertyCardDetail = ({ property, onClose, onEdit, onDeleteConfirm }) => {
           <button
             onClick={onEdit}
             className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 inline-flex items-center gap-2"
+            type="button"
           >
             <Pencil size={16} />
             Edit
@@ -123,6 +124,7 @@ const PropertyCardDetail = ({ property, onClose, onEdit, onDeleteConfirm }) => {
           <button
             onClick={onDeleteConfirm}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 inline-flex items-center gap-2"
+            type="button"
           >
             <Trash2 size={16} />
             Delete
@@ -130,6 +132,7 @@ const PropertyCardDetail = ({ property, onClose, onEdit, onDeleteConfirm }) => {
           <button
             onClick={onClose}
             className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+            type="button"
           >
             Close
           </button>

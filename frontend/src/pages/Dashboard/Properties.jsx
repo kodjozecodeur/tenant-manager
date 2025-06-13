@@ -3,7 +3,9 @@ import { PlusIcon } from "lucide-react";
 import PropertyCard from "../../components/Properties/PropertyCard";
 import PropertyCardDetail from "../../components/Properties/PropertyCardDetail";
 import AddPropertyCard from "../../components/Properties/AddPropertyCard";
-import { getProperties } from "../../utils/api";
+import { getProperties, deleteProperty } from "../../utils/api";
+import { toast } from "react-toastify";
+import { Trash2 } from "lucide-react";
 
 const Properties = () => {
   const [properties, setProperties] = React.useState([]);
@@ -11,6 +13,9 @@ const Properties = () => {
   const [error, setError] = React.useState(null);
   const [selectedProperty, setSelectedProperty] = React.useState(null);
   const [showAddModal, setShowAddModal] = React.useState(false);
+  const [editProperty, setEditProperty] = React.useState(null);
+  const [propertyToDelete, setPropertyToDelete] = React.useState(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const fetchProperties = () => {
     setLoading(true);
@@ -24,15 +29,37 @@ const Properties = () => {
   };
 
   React.useEffect(() => {
-    setLoading(true);
-    getProperties()
-      .then((data) => {
-        setProperties(data);
-        setError(null);
-      })
-      .catch((err) => setError(err.message || "Failed to load properties"))
-      .finally(() => setLoading(false));
+    fetchProperties();
   }, []);
+
+  const handleEdit = (property) => {
+    setEditProperty(property);
+    setShowAddModal(true);
+    // selectedProperty remains until modal opens
+  };
+
+  const handleDelete = (property) => {
+    setPropertyToDelete(property);
+  };
+
+  const cancelDelete = () => {
+    setPropertyToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteProperty(propertyToDelete._id || propertyToDelete.id);
+      toast.success("Property deleted successfully");
+      setSelectedProperty(null);
+      setPropertyToDelete(null);
+      fetchProperties();
+    } catch (err) {
+      toast.error(err.message || "Failed to delete property");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div>
@@ -73,13 +100,53 @@ const Properties = () => {
         <PropertyCardDetail
           property={selectedProperty}
           onClose={() => setSelectedProperty(null)}
+          onEdit={() => handleEdit(selectedProperty)}
+          onDeleteConfirm={() => handleDelete(selectedProperty)}
         />
       )}
       {showAddModal && (
         <AddPropertyCard
-          onClose={() => setShowAddModal(false)}
-          onSuccess={fetchProperties}
+          onClose={() => {
+            setShowAddModal(false);
+            setEditProperty(null);
+          }}
+          onSuccess={() => {
+            fetchProperties();
+            setShowAddModal(false);
+            setEditProperty(null);
+          }}
+          property={editProperty}
+          setProperty={setEditProperty}
         />
+      )}
+      {propertyToDelete && (
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <div className="flex items-center mb-4 text-yellow-700">
+              <Trash2 className="w-5 h-5 mr-2" />
+              <h3 className="text-lg font-semibold">Confirm Delete</h3>
+            </div>
+            <p className="mb-6">
+              Are you sure you want to delete '{propertyToDelete.name}'?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100"
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

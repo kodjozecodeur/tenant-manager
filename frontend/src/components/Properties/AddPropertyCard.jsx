@@ -1,16 +1,34 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { createProperty } from "../../utils/api";
+import { createProperty, updateProperty } from "../../utils/api";
 
-const AddPropertyCard = ({ onClose, onSuccess }) => {
+const AddPropertyCard = ({ onClose, onSuccess, property, setProperty }) => {
   // Handle form submission
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: property?.name || "",
+      address: property?.address || "",
+      description: property?.description || "",
+      type: property?.type || "",
+    },
+  });
+
+  React.useEffect(() => {
+    if (property) {
+      reset({
+        name: property.name || "",
+        address: property.address || "",
+        description: property.description || "",
+        type: property.type || "",
+      });
+    }
+  }, [property, reset]);
 
   //onSubmit function
   const onSubmit = async (data) => {
@@ -37,9 +55,15 @@ const AddPropertyCard = ({ onClose, onSuccess }) => {
         type: data.type,
         photos,
       };
-      await createProperty(payload);
-      toast.success("Property added successfully!");
+      if (property && (property._id || property.id)) {
+        await updateProperty(property._id || property.id, payload);
+        toast.success("Property updated successfully!");
+      } else {
+        await createProperty(payload);
+        toast.success("Property added successfully!");
+      }
       reset(); // Reset form fields
+      setProperty?.(null);
       onSuccess?.(); // Call success callback to refresh properties list
       onClose(); // Close the modal
     } catch (error) {

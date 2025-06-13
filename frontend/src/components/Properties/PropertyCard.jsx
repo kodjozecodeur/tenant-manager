@@ -1,13 +1,8 @@
 import React from "react";
 import { Calculator, Calendar, MapPin, Users, Wrench } from "lucide-react";
-import { mockTenants } from "../../data/mockTenants";
 
 // Accept props as an object and destructure property from props
 const PropertyCard = ({ property, onClick }) => {
-  // Find tenant name by tenantId
-  const tenant = property.tenantId
-    ? mockTenants.find((t) => t.id === property.tenantId)
-    : null;
   return (
     <button
       type="button"
@@ -30,14 +25,12 @@ const PropertyCard = ({ property, onClick }) => {
           <h3 className="text-lg font-semibold text-gray-900 truncate">
             {property.name || "House 1"}
           </h3>
-          <span
-            className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-              property.status === "vacant"
-                ? "bg-red-100 text-red-800"
-                : "bg-green-100 text-green-800"
-            }`}
-          >
-            {property.status || "taken"}
+          <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+            {property.units && property.units.length > 0
+              ? `${property.units.length} unit${
+                  property.units.length > 1 ? "s" : ""
+                }`
+              : "0 units"}
           </span>
         </div>
         <div className="flex items-center text-gray-600 mb-3">
@@ -71,7 +64,8 @@ const PropertyCard = ({ property, onClick }) => {
           <div className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
             <Users className="w-4 h-4 mr-1" />
             <span className="text-sm">
-              {tenant ? tenant.name : "No tenant"}
+              {/* Remove tenant name, just show property.tenantId or fallback */}
+              {property.tenantId || "No tenant"}
             </span>
           </div>
           <div className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
