@@ -1,15 +1,22 @@
-import React from "react";
-import TenantCard from "../../components/Tenants/TenantCard";
+import React, { useState } from "react";
+import TenantCard from "../../components/Tenants/TenantList";
 import TenantCardDetail from "../../components/Tenants/TenantCardDetail";
 import AddTenantCard from "../../components/Tenants/AddTenantCard";
-import { getTenants } from "../../utils/api";
+import { PlusIcon } from "lucide-react";
+import TenantList from "../../components/Tenants/TenantList";
+import { deleteTenant, getTenants } from "../../utils/tenantApi";
+import { toast } from "react-toastify";
+// import { getTenants } from "../../utils/api";
 
 const Tenants = () => {
-  const [tenants, setTenants] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(null);
-  const [selectedTenant, setSelectedTenant] = React.useState(null);
-  const [showAddTenant, setShowAddTenant] = React.useState(false);
+  const [tenants, setTenants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  //state to track selected tenant
+  const [activeTenant, setActiveTenant] = useState(null);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isViewModalVisible, setIsViewModalVisible] = useState(false);
+  const [showAddTenant, setShowAddTenant] = useState(false);
 
   React.useEffect(() => {
     setLoading(true);
@@ -21,50 +28,111 @@ const Tenants = () => {
       .catch((err) => setError(err.message || "Failed to load tenants"))
       .finally(() => setLoading(false));
   }, []);
+  // handle delete tenant
+  const handleDelete = (tenantId) => {
+    if (window.confirm("Are you sure you want to delete this tenant?")) {
+      // Call API to delete tenant
+      // Assuming deleteTenant is a function that deletes a tenant by ID
+      deleteTenant(tenantId)
+        .then(() => {
+          setTenants(tenants.filter((tenant) => tenant._id !== tenantId));
+          toast.success("Tenant deleted successfully");
+        })
+        .catch((err) => toast.error(err.message || "Failed to delete tenant"));
+    }
+  };
+  // handle edit tenant
+  const handleEdit = (tenant) => {
+    setActiveTenant(tenant);
+    setIsEditModalVisible(true);
+  };
+  // handle view tenant
+  const handleView = (tenant) => {
+    setActiveTenant(tenant);
+    setIsViewModalVisible(true);
+  };
+  // handle add tenant
+  // const handleAddTenant = (newTenant) => {
+  //   setTenants((prev) => [...prev, newTenant]);
+  //   toast.success("Tenant added successfully");
+  //   setShowAddTenant(false);
+  // };
 
   return (
     <div>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between items-center bg-white p-4 ">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-4">Tenants</h1>
+          <p className="text-gray-600">
+            Manage your tenants and their information
+          </p>
+        </div>
         <button
-          className="px-4 py-2 bg-blue-600 text-white rounded"
           onClick={() => setShowAddTenant(true)}
+          className="bg-[#29A073] text-white px-4 py-2 rounded-md inline-flex items-center gap-2 cursor-pointer hover:bg-[#1f7a5c] transition-colors"
         >
-          + Add Tenant
+          <PlusIcon />
+          Add Tenant
         </button>
       </div>
-      {showAddTenant && (
-        <AddTenantCard
-          onClose={() => setShowAddTenant(false)}
-          onSuccess={() => setShowAddTenant(false)}
+      {/* searchbar and filter by status */}
+      <div className="flex items-center gap-4 p-4">
+        <input
+          type="text"
+          placeholder="Search tenants..."
+          className="border border-gray-300 rounded-md px-4 py-2 w-full"
+        />
+        <select className="border border-gray-300 rounded-md px-4 py-2">
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      {/* Tenant List Components */}
+      <div className="p-4 overflow-x-auto">
+        <TenantList
+          tenants={tenants}
+          loading={loading}
+          error={error}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+          onView={handleView}
+        />
+      </div>
+      {/* is edit modal */}
+      {isEditModalVisible && (
+        <EditTenantModal
+          tenant={activeTenant}
+          isOpen={isEditModalVisible}
+          onClose={() => setIsEditModalVisible(false)}
+          onUpdate={(updatedTenant) => {
+            // Optional: update state with new tenant data
+            setTenants((prev) =>
+              prev.map((t) => (t._id === updatedTenant._id ? updatedTenant : t))
+            );
+            toast.success("Tenant updated successfully");
+            setIsEditModalVisible(false);
+          }}
         />
       )}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {loading ? (
-          <div className="col-span-full text-center py-10 text-gray-500">
-            Loading tenants...
-          </div>
-        ) : error ? (
-          <div className="col-span-full text-center py-10 text-red-500">
-            {error}
-          </div>
-        ) : tenants.length === 0 ? (
-          <div className="col-span-full text-center py-10 text-gray-400">
-            No tenants found.
-          </div>
-        ) : (
-          tenants.map((tenant) => (
-            <TenantCard
-              key={tenant.id}
-              tenant={tenant}
-              onClick={setSelectedTenant}
-            />
-          ))
-        )}
-      </div>
-      {selectedTenant && (
-        <TenantCardDetail
-          tenant={selectedTenant}
-          onClose={() => setSelectedTenant(null)}
+      {/* view modal */}
+      {isViewModalVisible && (
+        <ViewTenantModal
+          tenant={activeTenant}
+          isOpen={isViewModalVisible}
+          onClose={() => setIsViewModalVisible(false)}
+        />
+      )}
+      {/* Add Tenant Modal */}
+      {showAddTenant && (
+        <AddTenantCard
+          isOpen={showAddTenant}
+          onClose={() => setShowAddTenant(false)}
+          onAdd={(newTenant) => {
+            setTenants((prev) => [...prev, newTenant]);
+            toast.success("Tenant added successfully");
+            setShowAddTenant(false);
+          }}
         />
       )}
     </div>

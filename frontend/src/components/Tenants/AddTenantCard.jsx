@@ -43,7 +43,10 @@ const AddTenantCard = ({ onClose, onSuccess }) => {
     <div className="fixed inset-0 bg-black/30 z-40 flex items-center justify-center p-4 ">
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
       <div className="bg-white rounded-lg p-6 z-50 shadow-lg w-full max-w-md relative">
-        <h2 className="text-xl font-semibold mb-4">Add New Tenant</h2>
+        <div className="mb-4 flex flex-col">
+          <h2 className="text-xl font-semibold mb-4">Add New Tenant</h2>
+        <p className="text-gray-600">Enter the tenant details below</p>
+        </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <input
