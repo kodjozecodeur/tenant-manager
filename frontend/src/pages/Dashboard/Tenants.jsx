@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import TenantCard from "../../components/Tenants/TenantList";
 import TenantCardDetail from "../../components/Tenants/TenantCardDetail";
 import AddTenantCard from "../../components/Tenants/AddTenantCard";
-import { PlusIcon } from "lucide-react";
+import { Contact2, PlusIcon } from "lucide-react";
 import TenantList from "../../components/Tenants/TenantList";
 import { deleteTenant, getTenants } from "../../utils/tenantApi";
 import { toast } from "react-toastify";
+import EditTenantModal from "../../components/Tenants/EditTenantModal";
+import ViewTenantModal from "../../components/Tenants/ViewTenantModal";
 // import { getTenants } from "../../utils/api";
 
 const Tenants = () => {
@@ -71,7 +73,7 @@ const Tenants = () => {
           onClick={() => setShowAddTenant(true)}
           className="bg-[#29A073] text-white px-4 py-2 rounded-md inline-flex items-center gap-2 cursor-pointer hover:bg-[#1f7a5c] transition-colors"
         >
-          <PlusIcon />
+          <Contact2 className="w-4 h-4" />
           Add Tenant
         </button>
       </div>

@@ -1,4 +1,13 @@
-import { Calendar, DollarSign, Mail, Phone } from "lucide-react";
+import {
+  Calendar,
+  DollarSign,
+  EyeIcon,
+  Mail,
+  Paperclip,
+  PencilIcon,
+  Phone,
+  Trash,
+} from "lucide-react";
 import React from "react";
 
 const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
@@ -35,13 +44,17 @@ const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
             className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
           >
             <td className="p-2">{tenant.name}</td>
-            <td className="p-2">{tenant.contact}</td>
-            <td className="p-2">{tenant.phone}</td>
+            <td className="p-2">{tenant.email}</td>
+            <td className="p-2">{tenant.phoneNumber}</td>
             <td className="p-2">
               {tenant.status ? (
-                <span className="text-green-600">Active</span>
+                <span className="text-green-600 inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 ">
+                  Active
+                </span>
               ) : (
-                <span className="text-gray-500">Inactive</span>
+                <span className="text-gray-500 inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100">
+                  Inactive
+                </span>
               )}
             </td>
             <td className="p-2 space-x-2">
@@ -49,19 +62,25 @@ const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
                 className="text-blue-600 hover:underline"
                 onClick={() => onView(tenant)}
               >
-                View
+                <EyeIcon className="w-4 h-4 text-gray-600 cursor-pointer" />
               </button>
               <button
                 className="text-yellow-600 hover:underline"
                 onClick={() => onEdit(tenant)}
               >
-                Edit
+                <PencilIcon className="w-4 h-4 text-gray-600 cursor-pointer" />
               </button>
               <button
                 className="text-red-600 hover:underline"
                 onClick={() => onDelete(tenant._id)}
               >
-                Delete
+                <Trash className="w-4 h-4 text-gray-600 cursor-pointer" />
+              </button>
+              <button
+                className="text-red-600 hover:underline"
+                // onClick={() => onDelete(tenant._id)}
+              >
+                <Paperclip className="w-4 h-4 text-gray-600 cursor-pointer" />
               </button>
             </td>
           </tr>
