@@ -39,7 +39,8 @@ const UnitList = ({ onAdd, onSelect }) => {
               onClick={() => onSelect(unit)}
             >
               <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                {unit.unitName}
+                {unit.unitName}{" "}
+                <span className="text-xs text-gray-500">({unit.code})</span>
               </h2>
               <p className="text-gray-600 mb-1">
                 Property: {unit.property?.name || "-"}

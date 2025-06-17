@@ -1,9 +1,12 @@
 import React from "react";
+import ErrorBoundary from "../../components/ErrorBoundary";
 
 const Profile = () => {
-  return <div>Profile</div>;
+  return (
+    <ErrorBoundary>
+      <div>Profile</div>
+    </ErrorBoundary>
+  );
 };
 
 export default Profile;
-
-

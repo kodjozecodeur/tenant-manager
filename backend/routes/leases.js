@@ -6,8 +6,8 @@ const Lease = require("../models/lease");
 router.get("/", async (req, res) => {
   try {
     const leases = await Lease.find()
-      .populate("unit", "number name")
-      .populate("tenant", "name email");
+      .populate("unit", "code number name")
+      .populate("tenant", "name email status");
     res.json(leases);
   } catch (error) {
     console.error("Error fetching leases:", error);
@@ -24,7 +24,7 @@ router.get("/expiring-soon", async (req, res) => {
     const leases = await Lease.find({
       endDate: { $gte: today, $lte: next30Days },
     })
-      .populate("unit", "number name")
+      .populate("unit", "code number name")
       .populate("tenant", "name email");
 
     res.json(leases);
@@ -38,7 +38,7 @@ router.get("/expiring-soon", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const lease = await Lease.findById(req.params.id)
-      .populate("unit", "number name")
+      .populate("unit", "code number name")
       .populate("tenant", "name email");
     if (!lease) return res.status(404).json({ message: "Lease not found" });
     res.json(lease);
@@ -54,6 +54,7 @@ router.post("/", async (req, res) => {
     const { unit, tenant, startDate, endDate, rentAmount, status } = req.body;
     // Check that the unit is vacant
     const Unit = require("../models/unit");
+    const Tenant = require("../models/tenant");
     const foundUnit = await Unit.findById(unit);
     if (!foundUnit) {
       return res.status(404).json({ message: "Unit not found" });
@@ -74,6 +75,8 @@ router.post("/", async (req, res) => {
     // Mark the unit as occupied
     foundUnit.status = "occupied";
     await foundUnit.save();
+    // Set tenant status to active
+    await Tenant.findByIdAndUpdate(tenant, { status: "active" });
     res.status(201).json(newLease);
   } catch (error) {
     console.error("Error creating lease:", error);

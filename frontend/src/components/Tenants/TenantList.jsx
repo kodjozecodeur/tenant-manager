@@ -10,7 +10,15 @@ import {
 } from "lucide-react";
 import React from "react";
 
-const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
+const TenantList = ({
+  tenants,
+  loading,
+  error,
+  onView,
+  onEdit,
+  onDelete,
+  onAssignLease,
+}) => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!tenants || tenants.length === 0) {
@@ -80,7 +88,10 @@ const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
                 className="text-red-600 hover:underline"
                 // onClick={() => onDelete(tenant._id)}
               >
-                <Paperclip className="w-4 h-4 text-gray-600 cursor-pointer" />
+                <Paperclip
+                  className="w-4 h-4 text-gray-600 cursor-pointer"
+                  onClick={() => onAssignLease(tenant)}
+                />
               </button>
             </td>
           </tr>

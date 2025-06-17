@@ -8,7 +8,9 @@ import { deleteTenant, getTenants } from "../../utils/tenantApi";
 import { toast } from "react-toastify";
 import EditTenantModal from "../../components/Tenants/EditTenantModal";
 import ViewTenantModal from "../../components/Tenants/ViewTenantModal";
-// import { getTenants } from "../../utils/api";
+import AssignLeaseModal from "../../components/Tenants/AssignLeaseModal";
+import { getUnits } from "../../utils/unitApi";
+import ErrorBoundary from "../../components/ErrorBoundary";
 
 const Tenants = () => {
   const [tenants, setTenants] = useState([]);
@@ -19,6 +21,8 @@ const Tenants = () => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isViewModalVisible, setIsViewModalVisible] = useState(false);
   const [showAddTenant, setShowAddTenant] = useState(false);
+  const [assignLeaseModal, setAssignLeaseModal] = useState(false);
+  const [units, setUnits] = useState([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -28,6 +32,13 @@ const Tenants = () => {
         setError(null);
       })
       .catch((err) => setError(err.message || "Failed to load tenants"))
+      .finally(() => setLoading(false));
+  }, []);
+  //fetch units
+  React.useEffect(() => {
+    getUnits()
+      .then(setUnits)
+      .catch((err) => setError(err.message || "Failed to load units"))
       .finally(() => setLoading(false));
   }, []);
   // handle delete tenant
@@ -57,87 +68,113 @@ const Tenants = () => {
   // const handleAddTenant = (newTenant) => {
   //   setTenants((prev) => [...prev, newTenant]);
   //   toast.success("Tenant added successfully");
-  //   setShowAddTenant(false);
+  //   setShowAddTenant(false)
   // };
+  // handle assign lease
+  const handleAssignLease = (tenant) => {
+    setActiveTenant(tenant);
+    setAssignLeaseModal(true);
+  };
 
   return (
-    <div>
-      <div className="flex justify-between items-center bg-white p-4 ">
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-4">Tenants</h1>
-          <p className="text-gray-600">
-            Manage your tenants and their information
-          </p>
+    <ErrorBoundary>
+      <div>
+        <div className="flex justify-between items-center bg-white p-4 ">
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-4">
+              Tenants
+            </h1>
+            <p className="text-gray-600">
+              Manage your tenants and their information
+            </p>
+          </div>
+          <button
+            onClick={() => setShowAddTenant(true)}
+            className="bg-[#29A073] text-white px-4 py-2 rounded-md inline-flex items-center gap-2 cursor-pointer hover:bg-[#1f7a5c] transition-colors"
+          >
+            <Contact2 className="w-4 h-4" />
+            Add Tenant
+          </button>
         </div>
-        <button
-          onClick={() => setShowAddTenant(true)}
-          className="bg-[#29A073] text-white px-4 py-2 rounded-md inline-flex items-center gap-2 cursor-pointer hover:bg-[#1f7a5c] transition-colors"
-        >
-          <Contact2 className="w-4 h-4" />
-          Add Tenant
-        </button>
+        {/* searchbar and filter by status */}
+        <div className="flex items-center gap-4 p-4">
+          <input
+            type="text"
+            placeholder="Search tenants..."
+            className="border border-gray-300 rounded-md px-4 py-2 w-full"
+          />
+          <select className="border border-gray-300 rounded-md px-4 py-2">
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        {/* Tenant List Components */}
+        <div className="p-4 overflow-x-auto">
+          <TenantList
+            tenants={tenants}
+            loading={loading}
+            error={error}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onView={handleView}
+            onAssignLease={handleAssignLease}
+          />
+        </div>
+        {/* is edit modal */}
+        {isEditModalVisible && (
+          <EditTenantModal
+            tenant={activeTenant}
+            isOpen={isEditModalVisible}
+            onClose={() => setIsEditModalVisible(false)}
+            onUpdate={(updatedTenant) => {
+              // Optional: update state with new tenant data
+              setTenants((prev) =>
+                prev.map((t) =>
+                  t._id === updatedTenant._id ? updatedTenant : t
+                )
+              );
+              toast.success("Tenant updated successfully");
+              setIsEditModalVisible(false);
+            }}
+          />
+        )}
+        {/* view modal */}
+        {isViewModalVisible && (
+          <ViewTenantModal
+            tenant={activeTenant}
+            isOpen={isViewModalVisible}
+            onClose={() => setIsViewModalVisible(false)}
+          />
+        )}
+        {/* Add Tenant Modal */}
+        {showAddTenant && (
+          <AddTenantCard
+            isOpen={showAddTenant}
+            onClose={() => setShowAddTenant(false)}
+            onAdd={(newTenant) => {
+              setTenants((prev) => [...prev, newTenant]);
+              toast.success("Tenant added successfully");
+              setShowAddTenant(false);
+            }}
+          />
+        )}
+        {/* Assign Lease Modal */}
+        {assignLeaseModal && (
+          <AssignLeaseModal
+            tenantId={activeTenant?._id}
+            tenant={activeTenant}
+            isOpen={assignLeaseModal}
+            onClose={() => setAssignLeaseModal(false)}
+            onSuccess={() => {
+              toast.success("Lease assigned successfully");
+              setAssignLeaseModal(false);
+            }}
+            units={units}
+          />
+        )}
       </div>
-      {/* searchbar and filter by status */}
-      <div className="flex items-center gap-4 p-4">
-        <input
-          type="text"
-          placeholder="Search tenants..."
-          className="border border-gray-300 rounded-md px-4 py-2 w-full"
-        />
-        <select className="border border-gray-300 rounded-md px-4 py-2">
-          <option value="">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </div>
-      {/* Tenant List Components */}
-      <div className="p-4 overflow-x-auto">
-        <TenantList
-          tenants={tenants}
-          loading={loading}
-          error={error}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-          onView={handleView}
-        />
-      </div>
-      {/* is edit modal */}
-      {isEditModalVisible && (
-        <EditTenantModal
-          tenant={activeTenant}
-          isOpen={isEditModalVisible}
-          onClose={() => setIsEditModalVisible(false)}
-          onUpdate={(updatedTenant) => {
-            // Optional: update state with new tenant data
-            setTenants((prev) =>
-              prev.map((t) => (t._id === updatedTenant._id ? updatedTenant : t))
-            );
-            toast.success("Tenant updated successfully");
-            setIsEditModalVisible(false);
-          }}
-        />
-      )}
-      {/* view modal */}
-      {isViewModalVisible && (
-        <ViewTenantModal
-          tenant={activeTenant}
-          isOpen={isViewModalVisible}
-          onClose={() => setIsViewModalVisible(false)}
-        />
-      )}
-      {/* Add Tenant Modal */}
-      {showAddTenant && (
-        <AddTenantCard
-          isOpen={showAddTenant}
-          onClose={() => setShowAddTenant(false)}
-          onAdd={(newTenant) => {
-            setTenants((prev) => [...prev, newTenant]);
-            toast.success("Tenant added successfully");
-            setShowAddTenant(false);
-          }}
-        />
-      )}
-    </div>
+    </ErrorBoundary>
   );
 };
 

@@ -28,6 +28,7 @@ const AddUnitCard = ({ onClose, onSuccess, properties }) => {
         );
       }
       const payload = {
+        code: data.code,
         unitName: data.unitName,
         description: data.description,
         size: data.size,
@@ -41,8 +42,10 @@ const AddUnitCard = ({ onClose, onSuccess, properties }) => {
       reset();
       onSuccess?.();
       onClose();
-    } catch {
-      toast.error("Something went wrong, try again.");
+    } catch (e) {
+      toast.error(
+        e?.response?.data?.message || "Something went wrong, try again."
+      );
     }
   };
 
@@ -52,6 +55,17 @@ const AddUnitCard = ({ onClose, onSuccess, properties }) => {
       <div className="bg-white rounded-lg p-6 z-50 shadow-lg w-full max-w-md relative">
         <h2 className="text-xl font-semibold mb-4">Add New Unit</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <input
+              type="text"
+              placeholder="Unit Code (e.g. A01)"
+              {...register("code", { required: "Unit code is required" })}
+              className="w-full border rounded p-2"
+            />
+            {errors.code && (
+              <p className="text-red-500 text-sm">{errors.code.message}</p>
+            )}
+          </div>
           <div>
             <input
               type="text"

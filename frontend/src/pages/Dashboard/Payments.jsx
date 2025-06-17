@@ -1,7 +1,12 @@
 import React from "react";
+import ErrorBoundary from "../../components/ErrorBoundary";
 
 const Payments = () => {
-  return <div>Payments</div>;
+  return (
+    <ErrorBoundary>
+      <div>Payments</div>
+    </ErrorBoundary>
+  );
 };
 
 export default Payments;
