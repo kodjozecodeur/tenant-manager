@@ -7,6 +7,8 @@ import axios from "axios";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+export { API_BASE_URL, getAuthHeaders };
+
 /**
  * Helper: Get Authorization headers if token exists in localStorage
  * @returns {Object} Headers object with Authorization if token is present
