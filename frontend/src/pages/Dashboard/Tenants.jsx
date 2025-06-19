@@ -8,6 +8,7 @@ import { deleteTenant, getTenants } from "../../utils/tenantApi";
 import { toast } from "react-toastify";
 import EditTenantModal from "../../components/Tenants/EditTenantModal";
 import ViewTenantModal from "../../components/Tenants/ViewTenantModal";
+import AssignLeaseModal from "../../components/Tenants/AssignLeaseModal";
 // import { getTenants } from "../../utils/api";
 
 const Tenants = () => {
@@ -18,6 +19,8 @@ const Tenants = () => {
   const [activeTenant, setActiveTenant] = useState(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isViewModalVisible, setIsViewModalVisible] = useState(false);
+  const [isAssignLeaseModalVisible, setIsAssignLeaseModalVisible] =
+    useState(false);
   const [showAddTenant, setShowAddTenant] = useState(false);
 
   React.useEffect(() => {
@@ -47,11 +50,16 @@ const Tenants = () => {
   const handleEdit = (tenant) => {
     setActiveTenant(tenant);
     setIsEditModalVisible(true);
-  };
-  // handle view tenant
+  }; // handle view tenant
   const handleView = (tenant) => {
     setActiveTenant(tenant);
     setIsViewModalVisible(true);
+  };
+
+  // handle assign lease
+  const handleAssignLease = (tenant) => {
+    setActiveTenant(tenant);
+    setIsAssignLeaseModalVisible(true);
   };
   // handle add tenant
   // const handleAddTenant = (newTenant) => {
@@ -92,6 +100,7 @@ const Tenants = () => {
       </div>
       {/* Tenant List Components */}
       <div className="p-4 overflow-x-auto">
+        {" "}
         <TenantList
           tenants={tenants}
           loading={loading}
@@ -99,6 +108,7 @@ const Tenants = () => {
           onDelete={handleDelete}
           onEdit={handleEdit}
           onView={handleView}
+          onAssignLease={handleAssignLease}
         />
       </div>
       {/* is edit modal */}
@@ -124,7 +134,7 @@ const Tenants = () => {
           isOpen={isViewModalVisible}
           onClose={() => setIsViewModalVisible(false)}
         />
-      )}
+      )}{" "}
       {/* Add Tenant Modal */}
       {showAddTenant && (
         <AddTenantCard
@@ -134,6 +144,25 @@ const Tenants = () => {
             setTenants((prev) => [...prev, newTenant]);
             toast.success("Tenant added successfully");
             setShowAddTenant(false);
+          }}
+        />
+      )}
+      {/* Assign Lease Modal */}
+      {isAssignLeaseModalVisible && (
+        <AssignLeaseModal
+          tenant={activeTenant}
+          isOpen={isAssignLeaseModalVisible}
+          onClose={() => setIsAssignLeaseModalVisible(false)}
+          onSuccess={() => {
+            // Refresh tenant list to reflect changes
+            getTenants()
+              .then((data) => {
+                setTenants(data);
+                setError(null);
+              })
+              .catch((err) =>
+                setError(err.message || "Failed to load tenants")
+              );
           }}
         />
       )}

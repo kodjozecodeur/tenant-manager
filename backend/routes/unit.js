@@ -2,21 +2,59 @@ const express = require("express");
 const Unit = require("../models/unit");
 const auth = require("../middleware/authMiddleware");
 const router = express.Router();
-const { body } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 
 // Create unit
 router.post(
   "/",
   auth,
   [
-    body("unitName").notEmpty().withMessage("Unit name is required"),
+    body("unitName")
+      .trim()
+      .notEmpty()
+      .withMessage("Unit name is required")
+      .isLength({ min: 1, max: 100 })
+      .withMessage("Unit name must be between 1 and 100 characters"),
     body("rent")
-      .isNumeric()
-      .withMessage("Rent is required and must be a number"),
-    body("property").notEmpty().withMessage("Property is required"),
+      .isNumeric({ min: 0 })
+      .withMessage("Rent must be a positive number")
+      .custom((value) => {
+        if (value <= 0) {
+          throw new Error("Rent must be greater than 0");
+        }
+        return true;
+      }),
+    body("property")
+      .notEmpty()
+      .withMessage("Property is required")
+      .isMongoId()
+      .withMessage("Invalid property ID"),
+    body("size")
+      .optional()
+      .isNumeric({ min: 0 })
+      .withMessage("Size must be a positive number"),
+    body("description")
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage("Description cannot exceed 500 characters"),
+    body("leaseTerms")
+      .optional()
+      .trim()
+      .isLength({ max: 200 })
+      .withMessage("Lease terms cannot exceed 200 characters"),
   ],
   async (req, res) => {
     try {
+      // Check for validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: errors.array(),
+        });
+      }
+
       const {
         unitName,
         description,
@@ -26,20 +64,52 @@ router.post(
         photos,
         property,
       } = req.body;
+
+      // Check if property exists
+      const Property = require("../models/property");
+      const propertyExists = await Property.findById(property);
+      if (!propertyExists) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      // Check for duplicate unit name within the same property
+      const existingUnit = await Unit.findOne({ unitName, property });
+      if (existingUnit) {
+        return res.status(400).json({
+          message:
+            "A unit with this name already exists in the selected property",
+        });
+      }
+
       const newUnit = new Unit({
-        unitName,
-        description,
-        size,
-        rent,
-        leaseTerms,
-        photos,
+        unitName: unitName.trim(),
+        description: description?.trim(),
+        size: size ? Number(size) : undefined,
+        rent: Number(rent),
+        leaseTerms: leaseTerms?.trim(),
+        photos: photos || [],
         property,
+        status: "vacant", // Explicitly set default status
         createdBy: req.user._id,
       });
+
       const savedUnit = await newUnit.save();
-      res.status(201).json(savedUnit);
+
+      // Populate the property info before sending response
+      const populatedUnit = await Unit.findById(savedUnit._id).populate(
+        "property",
+        "name address"
+      );
+
+      res.status(201).json(populatedUnit);
     } catch (error) {
       console.error("Error creating unit:", error);
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          message: "Validation error",
+          errors: Object.values(error.errors).map((err) => err.message),
+        });
+      }
       res.status(500).json({ message: "Server error" });
     }
   }

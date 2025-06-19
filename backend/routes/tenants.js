@@ -44,7 +44,12 @@ router.post(
 //get all tenant
 router.get("/", auth, async (req, res) => {
   try {
-    const tenants = await Tenant.find();
+    const tenants = await Tenant.find()
+      .populate("unit")
+      .populate({
+        path: "lease",
+        populate: { path: "unit" },
+      });
     res.status(200).json(tenants);
   } catch (error) {
     console.error("Error fetching tenants:", error);
@@ -56,7 +61,12 @@ router.get("/:id", auth, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const tenant = await Tenant.findById(id);
+    const tenant = await Tenant.findById(id)
+      .populate("unit")
+      .populate({
+        path: "lease",
+        populate: { path: "unit" },
+      });
     if (!tenant) {
       return res.status(404).json({ message: "Tenant not found" });
     }

@@ -10,7 +10,15 @@ import {
 } from "lucide-react";
 import React from "react";
 
-const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
+const TenantList = ({
+  tenants,
+  loading,
+  error,
+  onView,
+  onEdit,
+  onDelete,
+  onAssignLease,
+}) => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!tenants || tenants.length === 0) {
@@ -19,6 +27,7 @@ const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
   return (
     <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        {" "}
         <tr>
           <th scope="col" class="px-6 py-3">
             Name
@@ -33,10 +42,13 @@ const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
             Status
           </th>
           <th scope="col" class="px-6 py-3">
+            Lease Status
+          </th>
+          <th scope="col" class="px-6 py-3">
             Actions
           </th>
         </tr>
-      </thead>
+      </thead>{" "}
       <tbody>
         {tenants.map((tenant) => (
           <tr
@@ -54,6 +66,17 @@ const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
               ) : (
                 <span className="text-gray-500 inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100">
                   Inactive
+                </span>
+              )}
+            </td>
+            <td className="p-2">
+              {tenant.lease ? (
+                <span className="text-blue-600 inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-50">
+                  Leased
+                </span>
+              ) : (
+                <span className="text-orange-600 inline-block px-2 py-1 text-xs font-semibold rounded-full bg-orange-50">
+                  No Lease
                 </span>
               )}
             </td>
@@ -77,10 +100,22 @@ const TenantList = ({ tenants, loading, error, onView, onEdit, onDelete }) => {
                 <Trash className="w-4 h-4 text-gray-600 cursor-pointer" />
               </button>
               <button
-                className="text-red-600 hover:underline"
-                // onClick={() => onDelete(tenant._id)}
+                className={`hover:text-green-800 ${
+                  tenant.lease
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-green-600"
+                }`}
+                onClick={() => onAssignLease(tenant)}
+                disabled={tenant.lease}
+                title={tenant.lease ? "Lease already assigned" : "Assign Lease"}
               >
-                <Paperclip className="w-4 h-4 text-gray-600 cursor-pointer" />
+                <Paperclip
+                  className={`w-4 h-4 cursor-pointer ${
+                    tenant.lease
+                      ? "text-gray-400"
+                      : "text-gray-600 hover:text-green-600"
+                  }`}
+                />
               </button>
             </td>
           </tr>

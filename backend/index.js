@@ -63,7 +63,7 @@ app.use("/api/properties", auth, propertyRoutes);
 // Unit Routes
 // =========================
 const unitRoutes = require("./routes/unit");
-app.use("/api/units", unitRoutes);
+app.use("/api/units", auth, unitRoutes);
 
 // =========================
 // Maintenance Routes (CRUD)
@@ -87,6 +87,19 @@ app.use("/api/leases", auth, leaseRoutes);
 // =========================
 const paymentsRoutes = require("./routes/payments");
 app.use("/api/payments", auth, paymentsRoutes);
+
+// =========================
+// User Routes
+// =========================
+const userRoutes = require("./routes/users");
+app.use("/api/users", userRoutes);
+
+// =========================
+// Settings Routes
+// =========================
+const settingsRoutes = require("./routes/settings");
+app.use("/api/settings", settingsRoutes);
+
 // =========================
 // erro handler general
 // =========================

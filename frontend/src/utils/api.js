@@ -148,6 +148,66 @@ export async function getRecentPayments() {
 }
 
 /**
+ * Fetch all leases
+ * @returns {Promise<Array>} Array of all leases
+ */
+export async function getLeases() {
+  const res = await axios.get(`${API_BASE_URL}/leases`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Fetch a single lease by ID
+ * @param {string} leaseId - The lease ID
+ * @returns {Promise<Object>} Lease details
+ */
+export async function getLeaseById(leaseId) {
+  const res = await axios.get(`${API_BASE_URL}/leases/${leaseId}`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Create a new lease
+ * @param {Object} leaseData - Lease details
+ * @returns {Promise<Object>} Created lease
+ */
+export async function createLease(leaseData) {
+  const res = await axios.post(`${API_BASE_URL}/leases`, leaseData, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Update an existing lease
+ * @param {string} leaseId - The lease ID
+ * @param {Object} leaseData - Updated lease details
+ * @returns {Promise<Object>} Updated lease
+ */
+export async function updateLease(leaseId, leaseData) {
+  const res = await axios.put(`${API_BASE_URL}/leases/${leaseId}`, leaseData, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Delete a lease
+ * @param {string} leaseId - The lease ID
+ * @returns {Promise<Object>} Success message
+ */
+export async function deleteLease(leaseId) {
+  const res = await axios.delete(`${API_BASE_URL}/leases/${leaseId}`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
  * Fetch leases expiring within 30 days
  * @returns {Promise<Array>} Array of expiring leases
  */
@@ -159,9 +219,82 @@ export async function getExpiringLeases() {
 }
 
 /**
+ * Fetch all units
+ * @returns {Promise<Array>} List of units
+ */
+export async function getUnits() {
+  const res = await axios.get(`${API_BASE_URL}/units`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
  * Logout helper: Remove token and redirect to login
  */
 export function logout() {
   localStorage.removeItem("token");
   window.location.href = "/login";
+}
+
+/**
+ * Get current user profile
+ * @returns {Promise<Object>} User profile data
+ */
+export async function getUserProfile() {
+  const res = await axios.get(`${API_BASE_URL}/users/me`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Update current user profile
+ * @param {Object} userData - Updated user data
+ * @returns {Promise<Object>} Updated user profile
+ */
+export async function updateUserProfile(userData) {
+  const res = await axios.put(`${API_BASE_URL}/users/me`, userData, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Get user settings
+ * @returns {Promise<Object>} User settings data
+ */
+export async function getUserSettings() {
+  const res = await axios.get(`${API_BASE_URL}/settings`, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Update user settings
+ * @param {Object} settingsData - Updated settings data
+ * @returns {Promise<Object>} Updated settings
+ */
+export async function updateUserSettings(settingsData) {
+  const res = await axios.put(`${API_BASE_URL}/settings`, settingsData, {
+    headers: getAuthHeaders(),
+  });
+  return res.data;
+}
+
+/**
+ * Update user password
+ * @param {Object} passwordData - Password change data
+ * @returns {Promise<Object>} Success message
+ */
+export async function updatePassword(passwordData) {
+  const res = await axios.put(
+    `${API_BASE_URL}/settings/password`,
+    passwordData,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
+  return res.data;
 }
