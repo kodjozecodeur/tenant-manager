@@ -7,7 +7,6 @@ const UnitCard = ({ unit, onEditSuccess, onDeleteSuccess }) => {
   const [showEdit, setShowEdit] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [form, setForm] = useState({
-    code: unit.code || "",
     unitName: unit.unitName || "",
     size: unit.size || "",
     rent: unit.rent || "",
@@ -54,8 +53,7 @@ const UnitCard = ({ unit, onEditSuccess, onDeleteSuccess }) => {
       {/* Info */}
       <div className="p-4 flex-1">
         <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
-          {unit.unitName}{" "}
-          <span className="text-xs text-gray-500">({unit.code})</span>
+          {unit.unitName}
         </h3>
         <p className="text-sm text-gray-600 mb-1">
           Size: {unit.size ? `${unit.size} sq ft` : "-"}
@@ -79,15 +77,6 @@ const UnitCard = ({ unit, onEditSuccess, onDeleteSuccess }) => {
             </button>
             <h2 className="text-xl font-bold mb-4">Edit Unit</h2>
             <form onSubmit={handleEdit} className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium">Unit Code</label>
-                <input
-                  className="border rounded w-full p-2"
-                  value={form.code}
-                  onChange={(e) => setForm({ ...form, code: e.target.value })}
-                  required
-                />
-              </div>
               <div>
                 <label className="block text-sm font-medium">Unit Name</label>
                 <input

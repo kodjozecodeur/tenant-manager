@@ -1,12 +1,7 @@
 import React from "react";
-import ErrorBoundary from "../../components/ErrorBoundary";
 
 const Notifications = () => {
-  return (
-    <ErrorBoundary>
-      <div>Notifications</div>
-    </ErrorBoundary>
-  );
+  return <div>Notifications</div>;
 };
 
 export default Notifications;

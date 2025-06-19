@@ -16,10 +16,7 @@ const UnitDetail = ({ unit, onClose }) => {
         </div>
         <div className="p-6">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">
-              {unit.unitName}{" "}
-              <span className="text-xs text-gray-500">({unit.code})</span>
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">{unit.unitName}</h3>
             <p className="text-gray-600 mb-1">
               Property: {unit.property?.name || "-"}
             </p>

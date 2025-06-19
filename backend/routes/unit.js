@@ -10,7 +10,6 @@ router.post(
   auth,
   [
     body("unitName").notEmpty().withMessage("Unit name is required"),
-    body("code").notEmpty().withMessage("Unit code is required"),
     body("rent")
       .isNumeric()
       .withMessage("Rent is required and must be a number"),
@@ -19,7 +18,6 @@ router.post(
   async (req, res) => {
     try {
       const {
-        code,
         unitName,
         description,
         size,
@@ -29,7 +27,6 @@ router.post(
         property,
       } = req.body;
       const newUnit = new Unit({
-        code,
         unitName,
         description,
         size,
@@ -42,11 +39,6 @@ router.post(
       const savedUnit = await newUnit.save();
       res.status(201).json(savedUnit);
     } catch (error) {
-      if (error.code === 11000) {
-        return res
-          .status(400)
-          .json({ message: "Unit code must be unique per property." });
-      }
       console.error("Error creating unit:", error);
       res.status(500).json({ message: "Server error" });
     }
@@ -84,17 +76,11 @@ router.put("/:id", auth, async (req, res) => {
   try {
     const updatedUnit = await Unit.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true,
     });
     if (!updatedUnit)
       return res.status(404).json({ message: "Unit not found" });
     res.status(200).json(updatedUnit);
   } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "Unit code must be unique per property." });
-    }
     console.error("Error updating unit:", error);
     res.status(500).json({ message: "Server error" });
   }

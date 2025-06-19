@@ -13,7 +13,6 @@ const tenantSchema = new mongoose.Schema(
     },
     lease: { type: String },
     upfrontPayment: { type: Number, default: 0 },
-    status: { type: String, enum: ["active", "inactive"], default: "inactive" },
   },
   { timestamps: true }
 );

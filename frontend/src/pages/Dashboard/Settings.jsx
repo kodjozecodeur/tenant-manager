@@ -1,12 +1,7 @@
 import React from "react";
-import ErrorBoundary from "../../components/ErrorBoundary";
 
 const Settings = () => {
-  return (
-    <ErrorBoundary>
-      <div>Settings</div>
-    </ErrorBoundary>
-  );
+  return <div>Settings</div>;
 };
 
 export default Settings;

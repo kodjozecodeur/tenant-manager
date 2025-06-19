@@ -7,11 +7,6 @@ const unitSchema = new mongoose.Schema(
       ref: "Property",
       required: false,
     },
-    code: {
-      type: String,
-      required: true,
-      // Unique per property (compound index set below)
-    },
     unitName: {
       type: String,
       required: true,
@@ -42,12 +37,11 @@ const unitSchema = new mongoose.Schema(
       required: true,
     },
   },
+
   {
     timestamps: true,
   }
 );
-
-unitSchema.index({ property: 1, code: 1 }, { unique: true });
 
 const Unit = mongoose.model("Unit", unitSchema);
 
