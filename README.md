@@ -99,9 +99,7 @@ screenshots/ # App screenshots for demo/portfolio
 ## 📬 Contact
 
 Want to know more or see a live demo?  
-**Email:** [your.email@example.com](mailto:your.email@example.com)  
-**LinkedIn:** [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
+**Email:** [My Email](samuelmaglodji@gmail.com)
+**LinkedIn:** [My Linkedin Profile](https://www.linkedin.com/in/kojo-samuel-maglodji-2a1081319/)
 
 ---
-
-> _This project is open-source and available on [GitHub](https://github.com/yourusername/tenant-manager). Contributions, issues, and feature requests are welcome!_
