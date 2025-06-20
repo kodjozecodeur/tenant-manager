@@ -2,14 +2,19 @@ const mongoose = require("mongoose");
 const tenantSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    contact: { type: String },
+    email: { type: String },
+    phoneNumber: { type: String },
     property: { type: String },
     unit: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Unit",
       required: false, // made optional
     },
-    lease: { type: String },
+    lease: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Lease",
+      required: false,
+    },
     upfrontPayment: { type: Number, default: 0 },
   },
   { timestamps: true }

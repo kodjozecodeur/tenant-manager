@@ -2,11 +2,19 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 // Create user schema
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-});
+const userSchema = new mongoose.Schema(
+  {
+    name: String,
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    phone: String,
+    role: { type: String, enum: ["admin", "tenant"], default: "tenant" },
+    avatar: String,
+  },
+  {
+    timestamps: true,
+  }
+);
 
 // Pre-save middleware to hash password before saving
 userSchema.pre("save", async function (next) {

@@ -60,8 +60,7 @@ router.post("/", async (req, res) => {
     }
     if (foundUnit.status === "occupied") {
       return res.status(400).json({ message: "Unit is already occupied" });
-    }
-    // Create the lease
+    } // Create the lease
     const newLease = new Lease({
       unit,
       tenant,
@@ -71,6 +70,14 @@ router.post("/", async (req, res) => {
       status,
     });
     await newLease.save();
+
+    // Update the tenant with the lease reference
+    const Tenant = require("../models/tenant");
+    await Tenant.findByIdAndUpdate(tenant, {
+      lease: newLease._id,
+      unit: unit,
+    });
+
     // Mark the unit as occupied
     foundUnit.status = "occupied";
     await foundUnit.save();
@@ -98,8 +105,21 @@ router.put("/:id", async (req, res) => {
 // DELETE /api/leases/:id - delete lease
 router.delete("/:id", async (req, res) => {
   try {
-    const lease = await Lease.findByIdAndDelete(req.params.id);
+    const lease = await Lease.findById(req.params.id);
     if (!lease) return res.status(404).json({ message: "Lease not found" });
+
+    // Remove lease reference from tenant
+    const Tenant = require("../models/tenant");
+    await Tenant.findByIdAndUpdate(lease.tenant, {
+      $unset: { lease: 1, unit: 1 },
+    });
+
+    // Mark unit as vacant
+    const Unit = require("../models/unit");
+    await Unit.findByIdAndUpdate(lease.unit, { status: "vacant" });
+
+    // Delete the lease
+    await Lease.findByIdAndDelete(req.params.id);
     res.json({ message: "Lease deleted" });
   } catch (error) {
     console.error("Error deleting lease:", error);

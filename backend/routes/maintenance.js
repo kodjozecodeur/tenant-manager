@@ -11,6 +11,11 @@ router.post(
   [
     body("tenant").notEmpty().withMessage("Tenant ID is required"),
     body("description").notEmpty().withMessage("Description is required"),
+    body("issueType")
+      .notEmpty()
+      .withMessage("Issue type is required")
+      .isIn(["Plumbing", "Electrical", "Heating", "Appliances", "Other"])
+      .withMessage("Invalid issue type"),
     body("status")
       .optional()
       .isIn(["Pending", "In Progress", "Completed"])
@@ -19,6 +24,7 @@ router.post(
       .optional()
       .isIn(["Low", "Medium", "High", "Critical"])
       .withMessage("Invalid priority"),
+    body("photoUrl").optional().isURL().withMessage("Invalid photo URL"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -26,14 +32,25 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { tenant, unit, property, description, status, priority, notes } =
-      req.body;
+    const {
+      tenant,
+      unit,
+      property,
+      description,
+      status,
+      priority,
+      notes,
+      issueType,
+      photoUrl,
+    } = req.body;
     try {
       const request = new MaintenanceRequest({
         tenant,
         unit,
         property,
         description,
+        issueType,
+        photoUrl,
         status,
         priority,
         notes,

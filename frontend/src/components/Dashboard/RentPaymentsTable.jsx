@@ -63,7 +63,7 @@ const RentPaymentsTable = () => {
                   }
                 >
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {payment.tenant}
+                    {payment.tenant.name}
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                     {payment.date}

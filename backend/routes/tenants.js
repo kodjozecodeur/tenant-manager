@@ -10,7 +10,7 @@ router.post(
   auth,
   [
     body("name").notEmpty().withMessage("Name is required"),
-    body("contact").notEmpty().withMessage("Contact is required"),
+    body("phoneNumber").notEmpty().withMessage("The Phone number is required"),
     // property, unit, lease, upfrontPayment are now optional
   ],
   async (req, res) => {
@@ -19,12 +19,14 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, contact, property, lease, unit, upfrontPayment } = req.body;
+    const { name, email, phoneNumber, property, lease, unit, upfrontPayment } =
+      req.body;
 
     try {
       const newTenant = new Tenant({
         name,
-        contact,
+        email,
+        phoneNumber,
         property,
         lease,
         unit,
@@ -42,7 +44,12 @@ router.post(
 //get all tenant
 router.get("/", auth, async (req, res) => {
   try {
-    const tenants = await Tenant.find();
+    const tenants = await Tenant.find()
+      .populate("unit")
+      .populate({
+        path: "lease",
+        populate: { path: "unit" },
+      });
     res.status(200).json(tenants);
   } catch (error) {
     console.error("Error fetching tenants:", error);
@@ -54,7 +61,12 @@ router.get("/:id", auth, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const tenant = await Tenant.findById(id);
+    const tenant = await Tenant.findById(id)
+      .populate("unit")
+      .populate({
+        path: "lease",
+        populate: { path: "unit" },
+      });
     if (!tenant) {
       return res.status(404).json({ message: "Tenant not found" });
     }
@@ -67,15 +79,15 @@ router.get("/:id", auth, async (req, res) => {
 //update tenant
 router.put("/:id", auth, async (req, res) => {
   const { id } = req.params;
-  const { name, contact, property, lease, unit, upfrontPayment } = req.body;
+  const { name, email, phoneNumber, property, lease, unit, upfrontPayment } =
+    req.body;
 
   try {
     const updatedTenant = await Tenant.findByIdAndUpdate(
       id,
-      { name, contact, property, lease, unit, upfrontPayment },
+      { name, email, phoneNumber, property, lease, unit, upfrontPayment },
       { new: true }
     );
-
     if (!updatedTenant) {
       return res.status(404).json({ message: "Tenant not found" });
     }

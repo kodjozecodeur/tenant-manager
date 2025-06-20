@@ -20,6 +20,17 @@ const maintenanceRequestSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    issueType: {
+      type: String,
+      enum: ["Plumbing", "Electrical", "Heating", "Appliances", "Other"],
+      required: true,
+    },
+    photoUrl: {
+      type: String,
+    },
+    technician: {
+      type: String,
+    },
     status: {
       type: String,
       enum: ["Pending", "In Progress", "Completed"],

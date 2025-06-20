@@ -49,10 +49,10 @@ const LeasesExpirationList = () => {
               {leasesExp.map((lease, idx) => (
                 <tr key={idx}>
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {lease.tenant}
+                    {lease.tenant.name}
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {lease.property}
+                    {lease.property.name}
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                     {lease.expirationDate}
