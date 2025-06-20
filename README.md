@@ -100,6 +100,7 @@ screenshots/ # App screenshots for demo/portfolio
 
 Want to know more or see a live demo?  
 **Email:** [My Email](samuelmaglodji@gmail.com)
+---
 **LinkedIn:** [My Linkedin Profile](https://www.linkedin.com/in/kojo-samuel-maglodji-2a1081319/)
 
 ---
