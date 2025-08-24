@@ -85,7 +85,6 @@ screenshots/ # App screenshots for demo/portfolio
 - **Frontend:** React, Vite, Tailwind CSS, React Router, Axios
 - **Backend:** Node.js, Express, MongoDB, Mongoose, JWT Auth
 - **Other:** ESLint, dotenv, React Toastify
-
 ---
 
 ## 💡 Why Tenant Manager?
@@ -103,4 +102,3 @@ Want to know more or see a live demo?
 ---
 **LinkedIn:** [My Linkedin Profile](https://www.linkedin.com/in/kojo-samuel-maglodji-2a1081319/)
 
----
