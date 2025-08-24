@@ -12,9 +12,44 @@ tenant-manager/
 └── package.json      # Root package.json with convenience scripts
 ```
 
+## Deployment Strategy: Which Approach is Better?
+
+For your situation (using free tiers), you have two viable options:
+
+### Option 1: Both Services on Render (Recommended for simplicity)
+
+**Pros:**
+- Single platform to manage
+- Simplified environment variable management
+- Easier to set up and maintain
+- Both services can share the same domain structure
+
+**Cons:**
+- Render's free tier only includes one web service and one database
+- You'll need to upgrade for additional services
+
+### Option 2: Backend on Render, Frontend on Vercel (Recommended for performance)
+
+**Pros:**
+- Vercel is optimized for frontend deployment with superior CDN and performance
+- Each service can scale independently
+- Better separation of concerns
+- Both platforms have generous free tiers
+- You can take advantage of Vercel's preview deployments
+
+**Cons:**
+- Slightly more complex to manage (two platforms)
+- Need to handle CORS configuration between different domains
+
+**Recommendation:** For the free tier, **Option 2 is better** because:
+1. Vercel's free tier is more generous for frontend hosting
+2. You get better performance for your frontend
+3. Both platforms have excellent free tiers that won't cost you anything
+4. You can easily manage CORS with proper configuration
+
 ## Deployment Options
 
-### Option 1: Deploy to Render (Recommended)
+### Option 1: Deploy to Render (Both services)
 
 This project includes a `render.yaml` file that defines the deployment configuration for Render.com.
 
@@ -39,31 +74,37 @@ If you prefer to configure manually on Render:
 5. Set the Start Command to: `cd backend && npm start`
 6. Add environment variables as needed (DATABASE_URL, JWT_SECRET, etc.)
 
-### Option 2: Deploy Backend and Frontend Separately
+### Option 2: Backend on Render, Frontend on Vercel (Recommended)
 
-#### Backend Deployment
+#### Backend Deployment (Render)
 
 1. Deploy the `backend/` directory as a standalone Node.js application
 2. Set the build command to: `npm install`
 3. Set the start command to: `npm start`
 4. Ensure all required environment variables are set
 
-#### Frontend Deployment
+#### Frontend Deployment (Vercel)
 
-1. Deploy the `frontend/` directory as a static site
-2. Set the build command to: `npm install && npm run build`
-3. Set the publish directory to: `dist/`
-4. Configure environment variables for API endpoints
+1. Create a new project on Vercel
+2. Connect your GitHub repository
+3. Set the root directory to `/frontend`
+4. Set the build command to: `npm run build`
+5. Set the output directory to: `dist`
+6. Set the install command to: `npm install`
+7. Add environment variables:
+   - `VITE_API_URL` - Your Render backend URL (e.g., https://your-app.onrender.com/api)
 
 ## Environment Variables
 
-### Backend Required Variables
+### Backend Required Variables (Render)
 
 - `DATABASE_URL` - MongoDB connection string
 - `JWT_SECRET` - Secret for JWT token signing
 - `NODE_ENV` - Environment (development/production)
+- `PORT` - Port to run the server on (Render will set this automatically)
+- `FRONTEND_URL` - Your frontend URL for CORS configuration (e.g., https://your-frontend.vercel.app)
 
-### Frontend Required Variables
+### Frontend Required Variables (Vercel)
 
 - `VITE_API_URL` - Backend API URL (e.g., https://your-backend.onrender.com/api)
 
@@ -82,6 +123,30 @@ npm start
 npm run backend:install
 ```
 
+## Handling CORS Between Different Domains
+
+When deploying backend and frontend separately, you'll need to configure CORS in your backend. The current implementation allows all origins, which is fine for development but should be restricted in production.
+
+To configure CORS for production, update your backend `index.js` file:
+
+```javascript
+// In your backend index.js (around line 17)
+import cors from "cors";
+
+// Configure CORS options
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'development' 
+    ? true  // Allow all origins in development
+    : process.env.FRONTEND_URL || 'http://localhost:5173',  // Restrict to frontend URL in production
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+```
+
+Add `FRONTEND_URL` to your Render environment variables with your Vercel frontend URL.
+
 ## Troubleshooting
 
 ### Common Deployment Issues
@@ -91,6 +156,8 @@ npm run backend:install
 2. **Environment variables not set**: Make sure all required environment variables are configured in your deployment platform.
 
 3. **Database connection issues**: Verify that your database URL is correct and the database is accessible from your deployment environment.
+
+4. **CORS errors**: Ensure your CORS configuration allows requests from your frontend domain.
 
 ### Checking Deployment Logs
 
