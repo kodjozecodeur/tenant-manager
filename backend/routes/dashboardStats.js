@@ -1,12 +1,12 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+import Property from "../models/property.js";
+import Unit from "../models/unit.js";
+import Tenant from "../models/tenant.js";
+import Payment from "../models/payment.js";
+import Lease from "../models/lease.js";
+import MaintenanceRequest from "../models/maintenanceRequest.js";
 
-const Property = require("../models/property");
-const Unit = require("../models/unit");
-const Tenant = require("../models/tenant");
-const Payment = require("../models/payment");
-const Lease = require("../models/lease");
-const MaintenanceRequest = require("../models/maintenanceRequest"); // 👈 Don't forget this
+const router = express.Router();
 
 // GET /api/dashboard-stats
 router.get("/dashboard-stats", async (req, res) => {
@@ -54,6 +54,7 @@ router.get("/dashboard-stats", async (req, res) => {
         count,
       })
     );
+
     // --- Recent Rent Payments
     const recentPayments = await Payment.find()
       .sort({ date: -1 })
@@ -94,4 +95,4 @@ router.get("/dashboard-stats", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

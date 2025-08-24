@@ -1,14 +1,15 @@
-const express = require("express");
-const Unit = require("../models/unit");
-const auth = require("../middleware/authMiddleware");
-const Tenant = require("../models/tenant");
+import express from "express";
+import { body, validationResult } from "express-validator";
+import Unit from "../models/unit.js";
+import Tenant from "../models/tenant.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const { body, validationResult } = require("express-validator");
 
 // Move In Route
 router.post(
   "/units/:unitId/move-in",
-  auth,
+  authMiddleware,
   [
     body("name").notEmpty().withMessage("Name is required"),
     body("contact").notEmpty().withMessage("Contact is required"),
@@ -20,6 +21,11 @@ router.post(
   async (req, res) => {
     const { unitId } = req.params;
     const { name, contact, lease, upfrontPayment } = req.body;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
     try {
       // Find the unit to be assigned
@@ -58,32 +64,38 @@ router.post(
 );
 
 // Move Out Route
-router.patch("/units/:unitId/move-out", auth, async (req, res) => {
+router.patch("/units/:unitId/move-out", authMiddleware, async (req, res) => {
   const { unitId } = req.params;
+  
   try {
-    //find the unit by id
+    // Find the unit by id
     const unit = await Unit.findById(unitId);
     if (!unit) {
       return res.status(404).json({ message: "Unit not found" });
     }
-    //find the tenant associated with the unit
+    
+    // Find the tenant associated with the unit
     if (!unit.tenant) {
       return res
         .status(404)
         .json({ message: "No tenant associated with this unit" });
     }
+    
     const tenant = await Tenant.findById(unit.tenant);
     if (!tenant) {
       return res.status(404).json({ message: "Tenant not found" });
     }
-    //update tenant lease info
+    
+    // Update tenant lease info
     tenant.lease.endDate = new Date();
     tenant.lease.status = "ended";
     await tenant.save();
-    //update unit info
+    
+    // Update unit info
     unit.tenant = null;
     unit.status = "available";
     await unit.save();
+    
     res
       .status(200)
       .json({ message: "Tenant moved out successfully", tenant, unit });
@@ -93,4 +105,4 @@ router.patch("/units/:unitId/move-out", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

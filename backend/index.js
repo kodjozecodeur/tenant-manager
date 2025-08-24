@@ -1,11 +1,11 @@
 // =========================
 // Imports and Config
 // =========================
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const connectDB = require("./config/db");
-const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 
@@ -25,18 +25,18 @@ app.get("/", (req, res) => res.send("API Running"));
 // =========================
 // Seed Admin User Utility
 // =========================
-const seedAdminUser = require("./utils/autoSeedAdmin");
+import seedAdminUser from "./utils/autoSeedAdmin.js";
 
 // =========================
 // Auth Routes
 // =========================
-const authRoutes = require("./routes/auth");
+import authRoutes from "./routes/auth.js";
 app.use("/api", authRoutes);
 
 // =========================
 // Auth Middleware & Protected Route
 // =========================
-const auth = require("./middleware/authMiddleware");
+import auth from "./middleware/authMiddleware.js";
 app.get("/api/protected", auth, (req, res) => {
   res.send(`Hello user ${req.user.id}, you are authenticated`);
 });
@@ -44,68 +44,69 @@ app.get("/api/protected", auth, (req, res) => {
 // =========================
 // Tenant Routes
 // =========================
-const tenantRoutes = require("./routes/tenants");
+import tenantRoutes from "./routes/tenants.js";
 app.use("/api/tenants", auth, tenantRoutes);
 
 // =========================
 // move Inmove out routes
 // =========================
-const moveRoutes = require("./routes/moves");
+import moveRoutes from "./routes/moves.js";
 app.use("/api", moveRoutes);
 
 // =========================
 // Property Routes
 // =========================
-const propertyRoutes = require("./routes/property");
+import propertyRoutes from "./routes/property.js";
 app.use("/api/properties", auth, propertyRoutes);
 
 // =========================
 // Unit Routes
 // =========================
-const unitRoutes = require("./routes/unit");
+import unitRoutes from "./routes/unit.js";
 app.use("/api/units", auth, unitRoutes);
 
 // =========================
 // Maintenance Routes (CRUD)
 // =========================
-const maintenanceRoutes = require("./routes/maintenance");
+import maintenanceRoutes from "./routes/maintenance.js";
 app.use("/api/maintenance", auth, maintenanceRoutes);
+
 // =========================
 // Stats Routes
 // =========================
-const dashboardStatsRoutes = require("./routes/dashboardStats");
+import dashboardStatsRoutes from "./routes/dashboardStats.js";
 app.use("/api/dashboard", auth, dashboardStatsRoutes);
 
 // =========================
 // Lease Routes
 // =========================
-const leaseRoutes = require("./routes/leases");
+import leaseRoutes from "./routes/leases.js";
 app.use("/api/leases", auth, leaseRoutes);
 
 // =========================
 // Payment Routes
 // =========================
-const paymentsRoutes = require("./routes/payments");
+import paymentsRoutes from "./routes/payments.js";
 app.use("/api/payments", auth, paymentsRoutes);
 
 // =========================
 // User Routes
 // =========================
-const userRoutes = require("./routes/users");
+import userRoutes from "./routes/users.js";
 app.use("/api/users", userRoutes);
 
 // =========================
 // Settings Routes
 // =========================
-const settingsRoutes = require("./routes/settings");
+import settingsRoutes from "./routes/settings.js";
 app.use("/api/settings", settingsRoutes);
 
 // =========================
-// erro handler general
+// Error handler general
 // =========================
-
 app.use(notFound);
 app.use(errorHandler);
+
 // =========================
 // Start Server and Connect to DB
 // =========================
@@ -115,7 +116,9 @@ app.use(errorHandler);
     console.log("Connected to database successfully");
 
     // Seed admin user on startup
-    await seedAdminUser();
+    if (process.env.NODE_ENV === "development") {
+      await seedAdminUser();
+    }
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

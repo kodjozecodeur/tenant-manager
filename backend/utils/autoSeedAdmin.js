@@ -1,4 +1,4 @@
-const User = require("../models/user");
+import User from "../models/user.js";
 
 async function seedAdminUser() {
   try {
@@ -27,4 +27,4 @@ async function seedAdminUser() {
   }
 }
 
-module.exports = seedAdminUser;
+export default seedAdminUser;

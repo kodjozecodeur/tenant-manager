@@ -1,5 +1,5 @@
 // filepath: backend/models/maintenanceRequest.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const maintenanceRequestSchema = new mongoose.Schema(
   {
@@ -59,4 +59,4 @@ const MaintenanceRequest = mongoose.model(
   "MaintenanceRequest",
   maintenanceRequestSchema
 );
-module.exports = MaintenanceRequest;
+export default MaintenanceRequest;

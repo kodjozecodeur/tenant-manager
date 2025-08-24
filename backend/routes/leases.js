@@ -1,6 +1,9 @@
-const express = require("express");
+import express from "express";
+import Lease from "../models/lease.js";
+import Unit from "../models/unit.js";
+import Tenant from "../models/tenant.js";
+
 const router = express.Router();
-const Lease = require("../models/lease");
 
 // GET /api/leases - list all leases
 router.get("/", async (req, res) => {
@@ -52,15 +55,17 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { unit, tenant, startDate, endDate, rentAmount, status } = req.body;
+    
     // Check that the unit is vacant
-    const Unit = require("../models/unit");
     const foundUnit = await Unit.findById(unit);
     if (!foundUnit) {
       return res.status(404).json({ message: "Unit not found" });
     }
     if (foundUnit.status === "occupied") {
       return res.status(400).json({ message: "Unit is already occupied" });
-    } // Create the lease
+    }
+    
+    // Create the lease
     const newLease = new Lease({
       unit,
       tenant,
@@ -72,7 +77,6 @@ router.post("/", async (req, res) => {
     await newLease.save();
 
     // Update the tenant with the lease reference
-    const Tenant = require("../models/tenant");
     await Tenant.findByIdAndUpdate(tenant, {
       lease: newLease._id,
       unit: unit,
@@ -109,13 +113,11 @@ router.delete("/:id", async (req, res) => {
     if (!lease) return res.status(404).json({ message: "Lease not found" });
 
     // Remove lease reference from tenant
-    const Tenant = require("../models/tenant");
     await Tenant.findByIdAndUpdate(lease.tenant, {
       $unset: { lease: 1, unit: 1 },
     });
 
     // Mark unit as vacant
-    const Unit = require("../models/unit");
     await Unit.findByIdAndUpdate(lease.unit, { status: "vacant" });
 
     // Delete the lease
@@ -126,6 +128,5 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-//return the leases that will expire in 30 days
 
-module.exports = router;
+export default router;
