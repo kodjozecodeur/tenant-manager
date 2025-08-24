@@ -1,4 +1,25 @@
 {
+  "name": "tenant-manager",
+  "version": "1.0.0",
+  "description": "A full-stack web application for rental property management",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "backend:install": "cd backend && npm install",
+    "backend:start": "cd backend && npm start",
+    "backend:dev": "cd backend && npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "property-management",
+    "tenant-manager",
+    "rental",
+    "nodejs",
+    "react"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
     "express-validator": "^7.2.1"
   }
