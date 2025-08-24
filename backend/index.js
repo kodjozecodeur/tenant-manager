@@ -107,11 +107,6 @@ app.use("/api/users", userRoutes);
 import settingsRoutes from "./routes/settings.js";
 app.use("/api/settings", settingsRoutes);
 
-// =========================
-// Settings Routes
-// =========================
-import settingsRoutes from "./routes/settings.js";
-app.use("/api/settings", settingsRoutes);
 
 // =========================
 // Seed Routes
