@@ -1,8 +1,9 @@
-const express = require("express");
-const bcrypt = require("bcrypt");
-const User = require("../models/user");
-const Settings = require("../models/settings");
-const authMiddleware = require("../middleware/authMiddleware");
+import express from "express";
+import bcrypt from "bcrypt";
+import User from "../models/user.js";
+import Settings from "../models/settings.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
 
 // GET /api/settings - Get current user settings
@@ -142,4 +143,4 @@ router.put("/password", authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

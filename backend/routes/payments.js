@@ -1,14 +1,15 @@
 // filepath: backend/routes/payments.js
-const express = require("express");
-const { body, validationResult } = require("express-validator");
-const auth = require("../middleware/authMiddleware");
-const Payment = require("../models/payment");
+import express from "express";
+import { body, validationResult } from "express-validator";
+import Payment from "../models/payment.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
 
 // Create a payment
 router.post(
   "/",
-  auth,
+  authMiddleware,
   [
     body("tenant").notEmpty().withMessage("Tenant ID is required"),
     body("amount").isNumeric().withMessage("Amount must be a number"),
@@ -28,6 +29,7 @@ router.post(
     }
 
     const { tenant, amount, date, status, method, notes } = req.body;
+    
     try {
       const payment = new Payment({
         tenant,
@@ -37,6 +39,7 @@ router.post(
         method,
         notes,
       });
+      
       const saved = await payment.save();
       res.status(201).json(saved);
     } catch (error) {
@@ -47,7 +50,7 @@ router.post(
 );
 
 // Get all payments
-router.get("/", auth, async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const payments = await Payment.find().populate("tenant", "name");
     res.json(payments);
@@ -56,8 +59,9 @@ router.get("/", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-//retrieve 5 most recent payments
-router.get("/recent", auth, async (req, res) => {
+
+// Retrieve 5 most recent payments
+router.get("/recent", authMiddleware, async (req, res) => {
   try {
     const payments = await Payment.find()
       .sort({ date: -1 })
@@ -71,7 +75,7 @@ router.get("/recent", auth, async (req, res) => {
 });
 
 // Get payment by ID
-router.get("/:id", auth, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id).populate(
       "tenant",
@@ -86,7 +90,7 @@ router.get("/:id", auth, async (req, res) => {
 });
 
 // Update payment
-router.put("/:id", auth, async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const updated = await Payment.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -100,7 +104,7 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // Delete payment
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const deleted = await Payment.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Payment not found" });
@@ -111,4 +115,4 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

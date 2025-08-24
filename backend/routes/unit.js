@@ -1,13 +1,14 @@
-const express = require("express");
-const Unit = require("../models/unit");
-const auth = require("../middleware/authMiddleware");
+import express from "express";
+import Unit from "../models/unit.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const { body, validationResult } = require("express-validator");
+import  { body, validationResult } from "express-validator";
 
 // Create unit
 router.post(
   "/",
-  auth,
+  authMiddleware,
   [
     body("unitName")
       .trim()
@@ -116,7 +117,7 @@ router.post(
 );
 
 // Get all units
-router.get("/", auth, async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const units = await Unit.find().populate("property", "name address");
     res.status(200).json(units);
@@ -127,7 +128,7 @@ router.get("/", auth, async (req, res) => {
 });
 
 // Get unit by id
-router.get("/:id", auth, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const unit = await Unit.findById(req.params.id).populate(
       "property",
@@ -142,7 +143,7 @@ router.get("/:id", auth, async (req, res) => {
 });
 
 // Update unit
-router.put("/:id", auth, async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const updatedUnit = await Unit.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -157,7 +158,7 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // Delete unit
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const deletedUnit = await Unit.findByIdAndDelete(req.params.id);
     if (!deletedUnit)
@@ -169,4 +170,4 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

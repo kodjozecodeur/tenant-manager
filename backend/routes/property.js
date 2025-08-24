@@ -1,12 +1,15 @@
-const express = require("express");
-const Property = require("../models/property");
-const auth = require("../middleware/authMiddleware");
+import express from "express";
+import { body, validationResult } from "express-validator";
+import Property from "../models/property.js";
+import Unit from "../models/unit.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const { body, validationResult } = require("express-validator");
-//create property
+
+// Create property
 router.post(
   "/",
-  auth,
+  authMiddleware,
   [
     body("name").notEmpty().withMessage("Name is required"),
     body("address").notEmpty().withMessage("Address is required"),
@@ -15,18 +18,25 @@ router.post(
     body("photos").isArray().withMessage("Photos must be an array"),
   ],
   async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { name, address, description, type, photos } = req.body;
+    
     // Validate required fields
     console.log("req.user:", req.user);
     console.log("req.user.id:", req.user.id);
     console.log("req.user._id:", req.user._id);
 
     try {
-      //check if user is authorized to create a property
+      // Check if user is authorized to create a property
       // Check if user exists
       if (!req.user || !req.user._id) {
         return res.status(401).json({ message: "User not authenticated" });
       }
+      
       const newProperty = new Property({
         name,
         address,
@@ -35,6 +45,7 @@ router.post(
         photos,
         createdBy: req.user._id,
       });
+      
       const savedProperty = await newProperty.save();
       res.status(201).json(savedProperty);
     } catch (error) {
@@ -43,28 +54,31 @@ router.post(
     }
   }
 );
-//get all properties
-router.get("/", auth, async (req, res) => {
+
+// Get all properties
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const properties = await Property.find()
       .populate("createdBy", "name email")
       .lean();
+    
     // For each property, fetch its units
-    const Unit = require("../models/unit");
     const propertiesWithUnits = await Promise.all(
       properties.map(async (property) => {
         const units = await Unit.find({ property: property._id });
         return { ...property, units };
       })
     );
+    
     res.status(200).json(propertiesWithUnits);
   } catch (error) {
     console.error("Error fetching properties:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
-//get property by id
-router.get("/:id", auth, async (req, res) => {
+
+// Get property by id
+router.get("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -81,8 +95,9 @@ router.get("/:id", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-//update property
-router.put("/:id", auth, async (req, res) => {
+
+// Update property
+router.put("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { name, address, description, type, photos } = req.body;
 
@@ -101,8 +116,9 @@ router.put("/:id", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-//delete property
-router.delete("/:id", auth, async (req, res) => {
+
+// Delete property
+router.delete("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -116,4 +132,5 @@ router.delete("/:id", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-module.exports = router;
+
+export default router;

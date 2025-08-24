@@ -1,0 +1,99 @@
+// seed.js
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
+import User from "./models/user.js";
+import Tenant from "./models/tenant.js";
+import Property from "./models/property.js";
+import Unit from "./models/unit.js";
+import Lease from "./models/lease.js";
+import Payment from "./models/payment.js";
+
+// Load environment variables
+dotenv.config();
+
+const MONGO_URI = process.env.MONGO_URI;
+
+async function seed() {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log("✅ Connected to MongoDB...");
+
+    // Clear old data
+    await Promise.all([
+      User.deleteMany(),
+      Tenant.deleteMany(),
+      Property.deleteMany(),
+      Unit.deleteMany(),
+      Lease.deleteMany(),
+      Payment.deleteMany(),
+    ]);
+
+    // Hash demo password
+    const hashedPassword = await bcrypt.hash("demo123", 10);
+
+    // Create demo admin (landlord) and tenant
+    const admin = await User.create({
+      name: "Demo Admin",
+      email: "admin@demo.com",
+      password: hashedPassword,
+      phone: "555-0000",
+      role: "admin",
+    });
+
+    const tenantUser = await User.create({
+      name: "Demo Tenant",
+      email: "tenant@demo.com",
+      password: hashedPassword,
+      phone: "555-1111",
+      role: "tenant",
+    });
+
+    // Property + Unit
+    const property = await Property.create({
+      name: "Sunset Apartments",
+      address: "123 Main Street",
+      landlord: admin._id,
+    });
+
+    const unit = await Unit.create({
+      property: property._id,
+      unitNumber: "A-101",
+      rent: 500,
+    });
+
+    // Tenant + Lease
+    const tenant = await Tenant.create({
+      user: tenantUser._id,
+      name: "John Doe",
+      email: "john@tenant.com",
+      phone: "555-1234",
+      property: property._id,
+      unit: unit._id,
+    });
+
+    await Lease.create({
+      tenant: tenant._id,
+      property: property._id,
+      unit: unit._id,
+      startDate: new Date("2024-01-01"),
+      endDate: new Date("2025-01-01"),
+      rent: 500,
+    });
+
+    // Payments
+    await Payment.create([
+      { tenant: tenant._id, amount: 500, date: new Date("2024-01-01"), status: "Paid" },
+      { tenant: tenant._id, amount: 500, date: new Date("2024-02-01"), status: "Paid" },
+      { tenant: tenant._id, amount: 500, date: new Date("2024-03-01"), status: "Pending" },
+    ]);
+
+    console.log("✅ Demo DB seeded!");
+    process.exit(0);
+  } catch (error) {
+    console.error("❌ Error seeding database:", error);
+    process.exit(1);
+  }
+}
+
+seed();

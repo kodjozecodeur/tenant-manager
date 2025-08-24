@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const unitSchema = new mongoose.Schema(
   {
@@ -77,6 +77,5 @@ unitSchema.methods.isAvailableForLease = function () {
   return this.status === "vacant" && !this.tenant;
 };
 
-const Unit = mongoose.model("Unit", unitSchema);
+export default mongoose.model("Unit", unitSchema);
 
-module.exports = Unit;

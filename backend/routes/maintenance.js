@@ -1,13 +1,14 @@
-const express = require("express");
+import express from "express";
+import { body, validationResult } from "express-validator";
+import MaintenanceRequest from "../models/maintenanceRequest.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const auth = require("../middleware/authMiddleware");
-const { body, validationResult } = require("express-validator");
-const MaintenanceRequest = require("../models/maintenanceRequest");
 
 // Create a maintenance request
 router.post(
   "/",
-  auth,
+  authMiddleware,
   [
     body("tenant").notEmpty().withMessage("Tenant ID is required"),
     body("description").notEmpty().withMessage("Description is required"),
@@ -43,6 +44,7 @@ router.post(
       issueType,
       photoUrl,
     } = req.body;
+    
     try {
       const request = new MaintenanceRequest({
         tenant,
@@ -55,6 +57,7 @@ router.post(
         priority,
         notes,
       });
+      
       const saved = await request.save();
       res.status(201).json(saved);
     } catch (error) {
@@ -65,7 +68,7 @@ router.post(
 );
 
 // Get all maintenance requests
-router.get("/", auth, async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const requests = await MaintenanceRequest.find()
       .populate("tenant", "name")
@@ -79,7 +82,7 @@ router.get("/", auth, async (req, res) => {
 });
 
 // Get a maintenance request by ID
-router.get("/:id", auth, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const request = await MaintenanceRequest.findById(req.params.id)
       .populate("tenant", "name")
@@ -94,7 +97,7 @@ router.get("/:id", auth, async (req, res) => {
 });
 
 // Update a maintenance request
-router.put("/:id", auth, async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const updated = await MaintenanceRequest.findByIdAndUpdate(
       req.params.id,
@@ -110,7 +113,7 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 // Delete a maintenance request
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const deleted = await MaintenanceRequest.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Request not found" });
@@ -121,4 +124,4 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

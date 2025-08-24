@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const leaseSchema = new mongoose.Schema(
   {
@@ -35,4 +35,4 @@ const leaseSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Lease", leaseSchema);
+export default mongoose.model("Lease", leaseSchema);

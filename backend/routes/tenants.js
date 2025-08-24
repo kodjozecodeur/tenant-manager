@@ -1,13 +1,14 @@
-const express = require("express");
-const Tenant = require("../models/tenant");
-const auth = require("../middleware/authMiddleware");
-const { body, validationResult } = require("express-validator");
+import express from "express";
+import { body, validationResult } from "express-validator";
+import Tenant from "../models/tenant.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
 
-//create tenant,
+// Create tenant
 router.post(
   "/",
-  auth,
+  authMiddleware,
   [
     body("name").notEmpty().withMessage("Name is required"),
     body("phoneNumber").notEmpty().withMessage("The Phone number is required"),
@@ -41,8 +42,9 @@ router.post(
     }
   }
 );
-//get all tenant
-router.get("/", auth, async (req, res) => {
+
+// Get all tenants
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const tenants = await Tenant.find()
       .populate("unit")
@@ -56,8 +58,9 @@ router.get("/", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-//get tenant by id
-router.get("/:id", auth, async (req, res) => {
+
+// Get tenant by id
+router.get("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -76,8 +79,9 @@ router.get("/:id", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-//update tenant
-router.put("/:id", auth, async (req, res) => {
+
+// Update tenant
+router.put("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { name, email, phoneNumber, property, lease, unit, upfrontPayment } =
     req.body;
@@ -98,8 +102,9 @@ router.put("/:id", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-//delete tenant
-router.delete("/:id", auth, async (req, res) => {
+
+// Delete tenant
+router.delete("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -113,4 +118,5 @@ router.delete("/:id", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-module.exports = router;
+
+export default router;

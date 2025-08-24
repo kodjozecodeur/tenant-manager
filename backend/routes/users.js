@@ -1,7 +1,8 @@
-const express = require("express");
-const bcrypt = require("bcrypt");
-const User = require("../models/user");
-const authMiddleware = require("../middleware/authMiddleware");
+import express from "express";
+import bcrypt from "bcrypt";
+import User from "../models/user.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
 
 // GET /api/users/me - Get current user profile
@@ -57,4 +58,4 @@ router.put("/me", authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
