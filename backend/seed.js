@@ -14,8 +14,9 @@ dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI;
 
-async function seed() {
+export async function seedDemoData() {
   try {
+    console.log("Connecting to MongoDB...");
     await mongoose.connect(MONGO_URI);
     console.log("✅ Connected to MongoDB...");
 
@@ -89,11 +90,18 @@ async function seed() {
     ]);
 
     console.log("✅ Demo DB seeded!");
-    process.exit(0);
+    return { success: true, message: "Demo data seeded successfully!" };
   } catch (error) {
     console.error("❌ Error seeding database:", error);
-    process.exit(1);
+    return { success: false, message: "Error seeding database", error: error.message };
   }
 }
 
-seed();
+// If run directly, execute seeding
+if (import.meta.url === `file://${process.argv[1]}`) {
+  seedDemoData().then(() => {
+    mongoose.connection.close();
+  });
+}
+
+export default seedDemoData;

@@ -108,6 +108,18 @@ import settingsRoutes from "./routes/settings.js";
 app.use("/api/settings", settingsRoutes);
 
 // =========================
+// Settings Routes
+// =========================
+import settingsRoutes from "./routes/settings.js";
+app.use("/api/settings", settingsRoutes);
+
+// =========================
+// Seed Routes
+// =========================
+import seedRoutes from "./routes/seed.js";
+app.use("/api/seed", auth, seedRoutes);
+
+// =========================
 // Error handler general
 // =========================
 app.use(notFound);
