@@ -14,15 +14,7 @@ dotenv.config();
 
 export async function seedDemoData() {
   try {
-    // Check if we're already connected to MongoDB
-    if (mongoose.connection.readyState !== 1) {
-      console.log("Not connected to MongoDB, attempting to connect...");
-      const MONGO_URI = process.env.MONGO_URI;
-      await mongoose.connect(MONGO_URI);
-      console.log("✅ Connected to MongoDB...");
-    } else {
-      console.log("✅ Already connected to MongoDB...");
-    }
+    console.log("Seeding demo data...");
 
     // Clear old data
     await Promise.all([
@@ -59,12 +51,15 @@ export async function seedDemoData() {
       name: "Sunset Apartments",
       address: "123 Main Street",
       landlord: admin._id,
+      createdBy: admin._id,
     });
 
     const unit = await Unit.create({
       property: property._id,
+      unitName: "A-101",
       unitNumber: "A-101",
       rent: 500,
+      createdBy: admin._id,
     });
 
     // Tenant + Lease
@@ -77,20 +72,20 @@ export async function seedDemoData() {
       unit: unit._id,
     });
 
-    await Lease.create({
+    const lease = await Lease.create({
       tenant: tenant._id,
       property: property._id,
       unit: unit._id,
       startDate: new Date("2024-01-01"),
       endDate: new Date("2025-01-01"),
-      rent: 500,
+      rentAmount: 500,
     });
 
     // Payments
     await Payment.create([
-      { tenant: tenant._id, amount: 500, date: new Date("2024-01-01"), status: "Paid" },
-      { tenant: tenant._id, amount: 500, date: new Date("2024-02-01"), status: "Paid" },
-      { tenant: tenant._id, amount: 500, date: new Date("2024-03-01"), status: "Pending" },
+      { tenant: tenant._id, lease: lease._id, amount: 500, date: new Date("2024-01-01"), status: "Paid" },
+      { tenant: tenant._id, lease: lease._id, amount: 500, date: new Date("2024-02-01"), status: "Paid" },
+      { tenant: tenant._id, lease: lease._id, amount: 500, date: new Date("2024-03-01"), status: "Pending" },
     ]);
 
     console.log("✅ Demo DB seeded!");
