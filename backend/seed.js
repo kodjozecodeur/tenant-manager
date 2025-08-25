@@ -56,6 +56,7 @@ export async function seedDemoData() {
 
     const unit = await Unit.create({
       property: property._id,
+      unitName: "A-101",
       unitNumber: "A-101",
       rent: 500,
       createdBy: admin._id,
@@ -71,20 +72,20 @@ export async function seedDemoData() {
       unit: unit._id,
     });
 
-    await Lease.create({
+    const lease = await Lease.create({
       tenant: tenant._id,
       property: property._id,
       unit: unit._id,
       startDate: new Date("2024-01-01"),
       endDate: new Date("2025-01-01"),
-      rent: 500,
+      rentAmount: 500,
     });
 
     // Payments
     await Payment.create([
-      { tenant: tenant._id, amount: 500, date: new Date("2024-01-01"), status: "Paid" },
-      { tenant: tenant._id, amount: 500, date: new Date("2024-02-01"), status: "Paid" },
-      { tenant: tenant._id, amount: 500, date: new Date("2024-03-01"), status: "Pending" },
+      { tenant: tenant._id, lease: lease._id, amount: 500, date: new Date("2024-01-01"), status: "Paid" },
+      { tenant: tenant._id, lease: lease._id, amount: 500, date: new Date("2024-02-01"), status: "Paid" },
+      { tenant: tenant._id, lease: lease._id, amount: 500, date: new Date("2024-03-01"), status: "Pending" },
     ]);
 
     console.log("✅ Demo DB seeded!");
