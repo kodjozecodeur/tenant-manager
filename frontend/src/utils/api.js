@@ -7,6 +7,18 @@ import axios from "axios";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+// Configure axios defaults for CORS with credentials
+axios.defaults.withCredentials = true;
+
+// Create axios instance with base configuration
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
 export { API_BASE_URL, getAuthHeaders };
 
 /**
@@ -23,7 +35,7 @@ function getAuthHeaders() {
  * @returns {Promise<Array>} List of tenants
  */
 export async function getTenants() {
-  const res = await axios.get(`${API_BASE_URL}/tenants`, {
+  const res = await api.get(`/tenants`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -34,7 +46,7 @@ export async function getTenants() {
  * @returns {Promise<Array>} List of properties
  */
 export async function getProperties() {
-  const res = await axios.get(`${API_BASE_URL}/properties`, {
+  const res = await api.get(`/properties`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -46,7 +58,7 @@ export async function getProperties() {
  * @returns {Promise<Object>} Created property
  */
 export async function createProperty(propertyData) {
-  const res = await axios.post(`${API_BASE_URL}/properties`, propertyData, {
+  const res = await api.post(`/properties`, propertyData, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -58,7 +70,7 @@ export async function createProperty(propertyData) {
  * @returns {Promise<Object>} Property details
  */
 export async function getPropertyById(propertyId) {
-  const res = await axios.get(`${API_BASE_URL}/properties/${propertyId}`, {
+  const res = await api.get(`/properties/${propertyId}`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -69,11 +81,10 @@ export async function getPropertyById(propertyId) {
  * @param {string} propertyId - ID of the property to update
  * @param {Object} propertyData - Updated property details
  * @returns {Promise<Object>} Updated property
-
  */
 export async function updateProperty(propertyId, propertyData) {
-  const res = await axios.put(
-    `${API_BASE_URL}/properties/${propertyId}`,
+  const res = await api.put(
+    `/properties/${propertyId}`,
     propertyData,
     {
       headers: getAuthHeaders(),
@@ -88,19 +99,11 @@ export async function updateProperty(propertyId, propertyData) {
  * @returns {Promise<Object>} Response confirming deletion
  */
 export async function deleteProperty(propertyId) {
-  const res = await axios.delete(`${API_BASE_URL}/properties/${propertyId}`, {
+  const res = await api.delete(`/properties/${propertyId}`, {
     headers: getAuthHeaders(),
   });
   return res.data;
 }
-
-// Example for future expansion:
-// export async function getMaintenanceRequests() {
-//   const res = await axios.get(`${API_BASE_URL}/maintenance`, {
-//     headers: getAuthHeaders(),
-//   });
-//   return res.data;
-// }
 
 /**
  * User login
@@ -109,7 +112,7 @@ export async function deleteProperty(propertyId) {
  * @returns {Promise<Object>} { token }
  */
 export async function login(email, password) {
-  const res = await axios.post(`${API_BASE_URL}/login`, { email, password });
+  const res = await api.post(`/login`, { email, password });
   return res.data;
 }
 
@@ -118,14 +121,14 @@ export async function login(email, password) {
  * @returns {Promise<Object>} { totalProperties, totalTenants, occupiedProperties, vacantProperties }
  */
 export async function getDashboardStats() {
-  const res = await axios.get(`${API_BASE_URL}/dashboard/dashboard-stats`, {
+  const res = await api.get(`/dashboard/dashboard-stats`, {
     headers: getAuthHeaders(),
   });
   return res.data;
 }
 
 // Axios interceptor: Auto-logout on 401 Unauthorized
-axios.interceptors.response.use(
+api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
@@ -141,7 +144,7 @@ axios.interceptors.response.use(
  * @returns {Promise<Array>} Array of recent payments
  */
 export async function getRecentPayments() {
-  const res = await axios.get(`${API_BASE_URL}/payments/recent`, {
+  const res = await api.get(`/payments/recent`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -152,7 +155,7 @@ export async function getRecentPayments() {
  * @returns {Promise<Array>} Array of all leases
  */
 export async function getLeases() {
-  const res = await axios.get(`${API_BASE_URL}/leases`, {
+  const res = await api.get(`/leases`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -164,7 +167,7 @@ export async function getLeases() {
  * @returns {Promise<Object>} Lease details
  */
 export async function getLeaseById(leaseId) {
-  const res = await axios.get(`${API_BASE_URL}/leases/${leaseId}`, {
+  const res = await api.get(`/leases/${leaseId}`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -176,7 +179,7 @@ export async function getLeaseById(leaseId) {
  * @returns {Promise<Object>} Created lease
  */
 export async function createLease(leaseData) {
-  const res = await axios.post(`${API_BASE_URL}/leases`, leaseData, {
+  const res = await api.post(`/leases`, leaseData, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -189,7 +192,7 @@ export async function createLease(leaseData) {
  * @returns {Promise<Object>} Updated lease
  */
 export async function updateLease(leaseId, leaseData) {
-  const res = await axios.put(`${API_BASE_URL}/leases/${leaseId}`, leaseData, {
+  const res = await api.put(`/leases/${leaseId}`, leaseData, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -201,7 +204,7 @@ export async function updateLease(leaseId, leaseData) {
  * @returns {Promise<Object>} Success message
  */
 export async function deleteLease(leaseId) {
-  const res = await axios.delete(`${API_BASE_URL}/leases/${leaseId}`, {
+  const res = await api.delete(`/leases/${leaseId}`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -212,7 +215,7 @@ export async function deleteLease(leaseId) {
  * @returns {Promise<Array>} Array of expiring leases
  */
 export async function getExpiringLeases() {
-  const res = await axios.get(`${API_BASE_URL}/leases/expiring-soon`, {
+  const res = await api.get(`/leases/expiring-soon`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -223,7 +226,7 @@ export async function getExpiringLeases() {
  * @returns {Promise<Array>} List of units
  */
 export async function getUnits() {
-  const res = await axios.get(`${API_BASE_URL}/units`, {
+  const res = await api.get(`/units`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -242,7 +245,7 @@ export function logout() {
  * @returns {Promise<Object>} User profile data
  */
 export async function getUserProfile() {
-  const res = await axios.get(`${API_BASE_URL}/users/me`, {
+  const res = await api.get(`/users/me`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -254,7 +257,7 @@ export async function getUserProfile() {
  * @returns {Promise<Object>} Updated user profile
  */
 export async function updateUserProfile(userData) {
-  const res = await axios.put(`${API_BASE_URL}/users/me`, userData, {
+  const res = await api.put(`/users/me`, userData, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -265,7 +268,7 @@ export async function updateUserProfile(userData) {
  * @returns {Promise<Object>} User settings data
  */
 export async function getUserSettings() {
-  const res = await axios.get(`${API_BASE_URL}/settings`, {
+  const res = await api.get(`/settings`, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -277,7 +280,7 @@ export async function getUserSettings() {
  * @returns {Promise<Object>} Updated settings
  */
 export async function updateUserSettings(settingsData) {
-  const res = await axios.put(`${API_BASE_URL}/settings`, settingsData, {
+  const res = await api.put(`/settings`, settingsData, {
     headers: getAuthHeaders(),
   });
   return res.data;
@@ -289,8 +292,8 @@ export async function updateUserSettings(settingsData) {
  * @returns {Promise<Object>} Success message
  */
 export async function updatePassword(passwordData) {
-  const res = await axios.put(
-    `${API_BASE_URL}/settings/password`,
+  const res = await api.put(
+    `/settings/password`,
     passwordData,
     {
       headers: getAuthHeaders(),

@@ -12,12 +12,17 @@ import Payment from "./models/payment.js";
 // Load environment variables
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI;
-
-async function seed() {
+export async function seedDemoData() {
   try {
-    await mongoose.connect(MONGO_URI);
-    console.log("✅ Connected to MongoDB...");
+    // Check if we're already connected to MongoDB
+    if (mongoose.connection.readyState !== 1) {
+      console.log("Not connected to MongoDB, attempting to connect...");
+      const MONGO_URI = process.env.MONGO_URI;
+      await mongoose.connect(MONGO_URI);
+      console.log("✅ Connected to MongoDB...");
+    } else {
+      console.log("✅ Already connected to MongoDB...");
+    }
 
     // Clear old data
     await Promise.all([
@@ -89,11 +94,25 @@ async function seed() {
     ]);
 
     console.log("✅ Demo DB seeded!");
-    process.exit(0);
+    return { success: true, message: "Demo data seeded successfully!" };
   } catch (error) {
     console.error("❌ Error seeding database:", error);
-    process.exit(1);
+    return { success: false, message: "Error seeding database", error: error.message };
   }
 }
 
-seed();
+// If run directly, execute seeding
+if (import.meta.url === `file://${process.argv[1]}`) {
+  // For direct execution, we need to connect and then close
+  const MONGO_URI = process.env.MONGO_URI;
+  mongoose.connect(MONGO_URI).then(async () => {
+    console.log("✅ Connected to MongoDB...");
+    await seedDemoData();
+    mongoose.connection.close();
+  }).catch(error => {
+    console.error("❌ Error connecting to MongoDB:", error);
+    process.exit(1);
+  });
+}
+
+export default seedDemoData;

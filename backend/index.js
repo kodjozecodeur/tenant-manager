@@ -14,7 +14,55 @@ const app = express();
 // =========================
 // Middleware
 // =========================
-app.use(cors());
+// =========================
+// CORS Configuration - FIXED
+// =========================
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    let allowedOrigins;
+    
+    if (process.env.NODE_ENV === 'production') {
+      // For production, use environment variable or default
+      const frontendUrl = process.env.FRONTEND_URL || 'https://tenant-manager-frontend.vercel.app';
+      allowedOrigins = [
+        frontendUrl,
+        frontendUrl + '/', // Allow with trailing slash
+        frontendUrl.replace(/\/$/, '') // Remove trailing slash if it exists
+      ];
+    } else {
+      // For development
+      allowedOrigins = [
+        'http://localhost:5173', 
+        'http://localhost:5173/',
+        'http://localhost:3000',
+        'http://localhost:3000/'
+      ];
+    }
+    
+    // Remove duplicates
+    allowedOrigins = [...new Set(allowedOrigins)];
+    
+    // Check if origin is in allowed origins
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      // For debugging, log the origin that's being blocked
+      console.log('CORS blocked origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
+};
+
+// Use the same CORS configuration for both development and production
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // =========================
@@ -100,6 +148,13 @@ app.use("/api/users", userRoutes);
 // =========================
 import settingsRoutes from "./routes/settings.js";
 app.use("/api/settings", settingsRoutes);
+
+
+// =========================
+// Seed Routes
+// =========================
+import seedRoutes from "./routes/seed.js";
+app.use("/api/seed", auth, seedRoutes);
 
 // =========================
 // Error handler general
