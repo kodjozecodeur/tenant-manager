@@ -76,6 +76,11 @@ app.get("/", (req, res) => res.send("API Running"));
 import seedAdminUser from "./utils/autoSeedAdmin.js";
 
 // =========================
+// Seed Demo Data Utility
+// =========================
+import { seedDemoData } from "./seed.js";
+
+// =========================
 // Auth Routes
 // =========================
 import authRoutes from "./routes/auth.js";
@@ -170,9 +175,34 @@ app.use(errorHandler);
     await connectDB();
     console.log("Connected to database successfully");
 
-    // Seed admin user on startup
-    if (process.env.NODE_ENV === "development") {
-      await seedAdminUser();
+    // Seed admin user on startup (in both development and production)
+    await seedAdminUser();
+    
+    // Seed demo data based on environment to avoid overwriting production data
+    if (process.env.NODE_ENV === "development" && process.env.AUTO_SEED_DEMO === "true") {
+      console.log("Auto-seeding demo data in development environment...");
+      try {
+        const result = await seedDemoData();
+        if (result.success) {
+          console.log("Demo data seeded successfully!");
+        } else {
+          console.error("Error seeding demo data:", result.error);
+        }
+      } catch (error) {
+        console.error("Error during demo data seeding:", error);
+      }
+    } else if (process.env.NODE_ENV === "production" && process.env.AUTO_SEED_DEMO_PRODUCTION === "true") {
+      console.log("Auto-seeding demo data in production environment...");
+      try {
+        const result = await seedDemoData();
+        if (result.success) {
+          console.log("Demo data seeded successfully!");
+        } else {
+          console.error("Error seeding demo data:", result.error);
+        }
+      } catch (error) {
+        console.error("Error during demo data seeding:", error);
+      }
     }
 
     const PORT = process.env.PORT || 5000;

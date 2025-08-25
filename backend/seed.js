@@ -14,15 +14,7 @@ dotenv.config();
 
 export async function seedDemoData() {
   try {
-    // Check if we're already connected to MongoDB
-    if (mongoose.connection.readyState !== 1) {
-      console.log("Not connected to MongoDB, attempting to connect...");
-      const MONGO_URI = process.env.MONGO_URI;
-      await mongoose.connect(MONGO_URI);
-      console.log("✅ Connected to MongoDB...");
-    } else {
-      console.log("✅ Already connected to MongoDB...");
-    }
+    console.log("Seeding demo data...");
 
     // Clear old data
     await Promise.all([
