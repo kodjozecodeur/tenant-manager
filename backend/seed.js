@@ -26,14 +26,11 @@ export async function seedDemoData() {
       Payment.deleteMany(),
     ]);
 
-    // Hash demo password
-    const hashedPassword = await bcrypt.hash("demo123", 10);
-
     // Create demo admin (landlord) and tenant
     const admin = await User.create({
       name: "Demo Admin",
       email: "admin@demo.com",
-      password: hashedPassword,
+      password: "demo123",
       phone: "555-0000",
       role: "admin",
     });
@@ -41,7 +38,7 @@ export async function seedDemoData() {
     const tenantUser = await User.create({
       name: "Demo Tenant",
       email: "tenant@demo.com",
-      password: hashedPassword,
+      password: "demo123",
       phone: "555-1111",
       role: "tenant",
     });
