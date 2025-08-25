@@ -51,12 +51,14 @@ export async function seedDemoData() {
       name: "Sunset Apartments",
       address: "123 Main Street",
       landlord: admin._id,
+      createdBy: admin._id,
     });
 
     const unit = await Unit.create({
       property: property._id,
       unitNumber: "A-101",
       rent: 500,
+      createdBy: admin._id,
     });
 
     // Tenant + Lease
